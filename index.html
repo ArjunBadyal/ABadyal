@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ABadyal sTeX Archive</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f1e8;
+        --paper: #fffdf8;
+        --ink: #1f1a16;
+        --muted: #685c50;
+        --line: #d8c8b1;
+        --accent: #0d5d56;
+        --accent-2: #b85c38;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+        background:
+          radial-gradient(circle at top left, rgba(184, 92, 56, 0.12), transparent 28rem),
+          linear-gradient(180deg, #efe4d1 0%, var(--bg) 18%, #f8f5ef 100%);
+        color: var(--ink);
+      }
+      main {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 4rem;
+      }
+      header {
+        background: rgba(255, 253, 248, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 1.25rem;
+        padding: 1.5rem 1.5rem 1.25rem;
+        box-shadow: 0 24px 60px rgba(63, 40, 24, 0.08);
+      }
+      h1, h2 { margin: 0 0 0.75rem; }
+      p { line-height: 1.6; margin: 0 0 1rem; }
+      .lede { font-size: 1.05rem; max-width: 48rem; }
+      .note {
+        color: var(--muted);
+        border-left: 0.3rem solid var(--accent-2);
+        padding-left: 0.85rem;
+      }
+      section {
+        margin-top: 1.5rem;
+        background: rgba(255, 253, 248, 0.9);
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        padding: 1.25rem 1.25rem 1rem;
+      }
+      .grid { display: grid; gap: 1rem; }
+      .card {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 0.9rem;
+        padding: 1rem;
+        min-height: 100%;
+      }
+      .card:hover {
+        border-color: var(--accent);
+        transform: translateY(-1px);
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+      }
+      .card strong {
+        display: block;
+        font-size: 1.05rem;
+        margin-bottom: 0.35rem;
+      }
+      code {
+        font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+        font-size: 0.92em;
+      }
+      ul {
+        margin: 0.2rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li { margin: 0.4rem 0; }
+      .endpoint {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="eyebrow">Public Archive Slice</div>
+        <h1>ABadyal sTeX Archive</h1>
+        <p class="lede">
+          This site publishes selected Computer Science material from the
+          <code>ABadyal</code> sTeX/MMT archive.
+        </p>
+        <p class="note">
+          Static XHTML and PDF exports are not published here. Use the dynamic MMT
+          viewer for semantic references, overlays, and archive navigation once the
+          MMT server is deployed.
+        </p>
+      </header>
+
+      <section>
+        <h2>Dynamic Viewer</h2>
+        <div class="grid">
+          <div class="card">
+            <span class="eyebrow">Dynamic MMT</span>
+            <strong>Semantic Archive Viewer</strong>
+            <span class="endpoint">https://mmt.abadyal.com/:sTeX/browser?archive=ABadyal</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Publication Policy</h2>
+        <ul>
+          <li>This public archive currently contains the <code>ComputerScience</code> slice.</li>
+          <li>Additional public material may be added as it becomes ready.</li>
+          <li>The public repository is intended for dynamic MMT hosting, not static XHTML/PDF publication.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

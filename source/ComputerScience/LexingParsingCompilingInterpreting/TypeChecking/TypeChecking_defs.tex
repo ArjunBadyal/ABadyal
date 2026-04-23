@@ -1,0 +1,87 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\begin{document}
+
+\begin{smodule}[title={Type Checking}]{TypeChecking}
+
+    \symdecl*{TypeChecking}
+    \begin{sdefinition}[for=TypeChecking]
+        \definame{TypeChecking}: The process of verifying and enforcing constraints on the types of variables and expressions in a program to ensure correctness and facilitate efficient code generation .
+    \end{sdefinition}
+
+    \symdecl*{TypeSystem}
+    \begin{sdefinition}[for=TypeSystem]
+        \definame{TypeSystem}: A structured set of rules defining how variables, functions, and expressions are assigned types to prevent type errors and enable type inference .
+    \end{sdefinition}
+
+    \symdecl*{StaticTyping}
+    \begin{sdefinition}[for=StaticTyping]
+        \definame{StaticTyping}: A type-checking method where type constraints are evaluated at compile-time, reducing runtime errors .
+    \end{sdefinition}
+
+    \symdecl*{DynamicTyping}
+    \begin{sdefinition}[for=DynamicTyping]
+        \definame{DynamicTyping}: A type-checking method where types are checked at runtime, allowing greater flexibility but increasing runtime overhead .
+    \end{sdefinition}
+
+    \symdecl*{TypeInference}
+    \begin{sdefinition}[for=TypeInference]
+        \definame{TypeInference}: The process by which a compiler deduces the types of expressions automatically based on their usage and context within the program .
+    \end{sdefinition}
+
+    \symdecl*{Overloading}
+    \begin{sdefinition}[for=Overloading]
+        \definame{Overloading}: The ability to define multiple functions or operators with the same name but different argument types, resolved during type checking .
+    \end{sdefinition}
+
+    \symdecl*{TypeCasts}
+    \begin{sdefinition}[for=TypeCasts]
+        \definame{TypeCasts}: Explicit or implicit conversions from one type to another, often requiring type-checker assistance to generate appropriate conversion code .
+    \end{sdefinition}
+
+    \symdecl*{VariableScope}
+    \begin{sdefinition}[for=VariableScope]
+        \definame{VariableScope}: The region of a program where a variable is defined and accessible, constrained by block structure and declaration rules .
+    \end{sdefinition}
+
+    \symdecl*{BlockStructure}
+    \begin{sdefinition}[for=BlockStructure]
+        \definame{BlockStructure}: The organization of code into nested blocks, determining variable scope and visibility .
+    \end{sdefinition}
+
+    \symdecl*{Valid}
+    \begin{sdefinition}[for=Valid]
+        \definame{Valid}: A term describing a construct that adheres to the rules of the programming language and type system .
+    \end{sdefinition}
+
+    \symdecl*{Declaration}
+    \begin{sdefinition}[for=Declaration]
+        \definame{Declaration}: A statement that introduces a new variable, function, or type to the program, defining its name and attributes .
+    \end{sdefinition}
+
+    \symdecl*{Block}
+    \begin{sdefinition}[for=Block]
+        \definame{Block}: A syntactic construct used to group statements and control variable scope within a program .
+    \end{sdefinition}
+
+    \symdecl*{MutuallyRecursiveFunctions}
+    \begin{sdefinition}[for=MutuallyRecursiveFunctions]
+        \definame{MutuallyRecursiveFunctions}: A set of functions that call each other directly or indirectly in a cyclic manner, requiring special handling in type checking and evaluation .
+    \end{sdefinition}
+
+    \symdecl*{Proof}
+    \begin{sdefinition}[for=Proof]
+        \definame{Proof}: A logical argument demonstrating the truth of a statement, often represented as a sequence of logical steps or derivations .
+    \end{sdefinition}
+
+    \symdecl*{ProofTree}
+    \begin{sdefinition}[for=ProofTree]
+        \definame{ProofTree}: A hierarchical representation of a proof, where each node represents a logical step derived from its children.
+    \end{sdefinition}
+
+\end{smodule}
+
+\end{document}

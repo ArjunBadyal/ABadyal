@@ -1,0 +1,119 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\begin{document}
+
+\begin{smodule}[title={Hybrid Systems}]{Hybrid Programs}
+    \symdecl*{HybridProgram}
+    \begin{sdefinition}[for=HybridProgram]
+        \definame{HybridProgram}: A program notation for hybrid systems combining discrete and continuous dynamics.
+    \end{sdefinition}
+    \symdecl*{ODE}
+    \begin{sdefinition}[for=ODE]
+        \definame{ODE}: Let $f : D \to \mathbb{R}^n$ be a function on a domain $D \subseteq \mathbb{R} \times \mathbb{R}^n$, i.e., an open and connected subset. The function $Y : J \to \mathbb{R}^n$ is a solution on the interval $J \subseteq \mathbb{R}$ of the initial value problem
+
+        \[
+        \begin{cases}
+        y'(t) = f(t, y), \\
+        y(t_0) = y_0,
+        \end{cases}
+        \]
+        
+        with ordinary differential equation (ODE) $y' = f(t, y)$, if, for all times $t \in J$:
+        \begin{enumerate}
+            \item The solution $Y$ is in the domain $(t, Y(t)) \in D$,
+            \item The time-derivative $Y'(t)$ exists and is $Y'(t) = f(t, Y(t))$, and
+            \item The initial value $Y(t_0) = y_0$ is respected at the initial time, also $t_0 \in J$.
+        \end{enumerate}
+    \end{sdefinition}
+    \symdecl*{DiscreteAssignment}
+    \begin{sdefinition}[for=DiscreteAssignment]
+        \definame{DiscreteAssignment}: Assigns value of term $e$ to variable $x$ instantly. Notation: $x := e$
+    \end{sdefinition}
+
+    \symdecl*{ContinuousEvolution}
+    \begin{sdefinition}[for=ContinuousEvolution]
+        \definame{ContinuousEvolution}: The hybrid game that follows the differential equation $x' = f(x)$ where the duration is Angel's choice, but Angel is not allowed to choose a duration that would, at any time, take the state outside the region where evolution domain constraint formula $Q$ holds. Notation: $x' = f(x) \, \& \, Q$
+    \end{sdefinition}
+
+    \symdecl*{Test}
+    \begin{sdefinition}[for=Test]
+        \definame{Test}: Checks the truth-value of a first-order formula $Q$ at the current state. Notation: $?Q$
+    \end{sdefinition}
+
+    \symdecl*{SequentialComposition}
+    \begin{sdefinition}[for=SequentialComposition]
+        \definame{SequentialComposition}: The hybrid program that first plays hybrid program $\alpha$ and then, when $\alpha$ terminates without a player having lost, continues by playing game $\beta$. Notation: $\alpha;\beta$
+    \end{sdefinition}
+
+    \symdecl*{Choice}
+    \begin{sdefinition}[for=Choice]
+        \definame{Choice}: The hybrid game where Angel chooses whether to play hybrid game $\alpha$ or $\beta$. Notation: $\alpha \cup \beta$
+    \end{sdefinition}
+
+    \symdecl*{Repeat}
+    \begin{sdefinition}[for=Repeat]
+        \definame{Repeat}: Plays hybrid game $\alpha$ repeatedly as often as Angel chooses to. Notation: $\alpha^*$
+    \end{sdefinition}
+
+    \symdecl*{Dual}
+    \begin{sdefinition}[for=Dual]
+        \definame{Dual}:  The same as playing the hybrid game $\alpha$ with the roles of the players swapped. Notation: $\alpha^d$
+    \end{sdefinition}
+
+    \symdecl*{TransitionSemantics}
+    \begin{sdefinition}[for=TransitionSemantics]
+        \definame{TransitionSemantics}: Defines which state $\nu$ is reachable from which initial state $\omega$ by running a hybrid program $\alpha$.
+    \end{sdefinition}
+
+    \symdecl*{ODESemantics}
+    \begin{sdefinition}[for=ODESemantics]
+        \definame{ODESemantics}: Defines which state $\nu$ is reachable from which initial state $\omega$ by running an ODE $x' = f(x) \, \& \, Q$ for any duration $r$ within the evolution domain constraint $Q$.
+    \end{sdefinition}
+
+    \symdecl*{DifferentialTerm}
+    \begin{sdefinition}[for=DifferentialTerm]
+        \definame{DifferentialTerm}: The differential term $(e)'$ of term $e$ that describes the rate of change of the value of $e$ depending on the differential symbols $x'$ for all variables $x$ in $e$.
+    \end{sdefinition}
+
+    \symdecl*{Differential}
+    \begin{sdefinition}[for=Differential]
+        \definame{Differential}: The differential $(F)'$ of formula $F$ that describes the rate of change of the truth-value of $F$ depending on the differential symbols $x'$ for all variables $x$ in $F$.
+    \end{sdefinition}
+\end{smodule}
+
+\begin{smodule}[title={Differential Game Logic}]{Differential Game Logic}
+    \symdecl*{DifferentialGameLogic}
+    \begin{sdefinition}[for=DifferentialGameLogic]
+        \definame{DifferentialGameLogic}: A logic for specifying and verifying properties of hybrid games.
+    \end{sdefinition}
+
+    \symdecl*{DiamondModality}
+    \begin{sdefinition}[for=DiamondModality]
+        \definame{DiamondModality}: Expresses that Angel has a winning strategy to achieve $P$ in hybrid game $\alpha$. Notation: $\langle \alpha \rangle P$
+    \end{sdefinition}
+
+    \symdecl*{BoxModality}
+    \begin{sdefinition}[for=BoxModality]
+        \definame{BoxModality}: Expresses that Demon has a winning strategy to achieve  $P$ in hybrid game $\alpha$. Notation: $[\alpha] P$
+    \end{sdefinition}
+
+    \symdecl*{Semantics}
+    \begin{sdefinition}[for=Semantics]
+        \definame{Semantics}: The set of states $[\![P]\!] \subseteq \mathcal{S}$ in which the dGL formula $P$ is true. 
+    \end{sdefinition}
+
+    \symdecl*{WinningRegion}
+    \begin{sdefinition}[for=WinningRegion]
+        \definame{WinningRegion}: The set of states $\varsigma_\alpha(X)$ from which Angel has a winning strategy to achieve $X$ in hybrid game $\alpha$, and the set of states $\delta_\alpha(X)$ from which Demon has a winning strategy to achieve $X$ in hybrid game $\alpha$.
+    \end{sdefinition}
+
+    \symdecl*{Determinacy}
+    \begin{sdefinition}[for=Determinacy]
+        \definame{Determinacy}: From any initial state, one of the players always has a winning strategy to force a win in hybrid game $\alpha$, no matter what the other player chooses to play. 
+    \end{sdefinition}
+\end{smodule}
+
+\end{document}

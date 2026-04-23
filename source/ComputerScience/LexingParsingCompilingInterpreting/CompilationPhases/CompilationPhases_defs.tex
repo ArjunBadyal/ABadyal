@@ -1,0 +1,109 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\begin{document}
+
+\begin{smodule}[title={Compilation Phases}]{Compilation}
+    \symdecl*{HighLevelLanguage}
+    \begin{sdefinition}[for=HighLevelLanguage]
+        \definame{HighLevelLanguage}: Programming languages closer to human thought, providing abstraction from machine operations (e.g., Java, Python).
+    \end{sdefinition}
+    
+    \symdecl*{LowLevelLanguage}
+    \begin{sdefinition}[for=LowLevelLanguage]
+        \definame{LowLevelLanguage}: Languages closer to hardware, such as assembly or machine code, offering minimal abstraction.
+    \end{sdefinition}
+    
+    \symdecl*{Compiler}
+    \begin{sdefinition}[for=Compiler]
+        \definame{Compiler}: A program that translates source code from a high-level language to target code (e.g., machine code or bytecode).
+    \end{sdefinition}
+    
+    \symdecl*{Interpreter}
+    \begin{sdefinition}[for=Interpreter]
+        \definame{Interpreter}: A program that directly executes instructions written in a programming or intermediate language.
+    \end{sdefinition}
+    
+    \symdecl*{Lexing}
+    \begin{sdefinition}[for=Lexing]
+        \definame{Lexing}: The phase that converts a sequence of characters into tokens, the basic units of meaning.
+    \end{sdefinition}
+    
+    \symdecl*{Parsing}
+    \begin{sdefinition}[for=Parsing]
+        \definame{Parsing}: The phase that converts a sequence of tokens into a syntax tree, representing the program's grammatical structure.
+    \end{sdefinition}
+    
+    \symdecl*{TypeChecking}
+    \begin{sdefinition}[for=TypeChecking]
+        \definame{TypeChecking}: Ensures program correctness by verifying that operations are applied to compatible types.
+    \end{sdefinition}
+    
+    \symdecl*{CodeGeneration}
+    \begin{sdefinition}[for=CodeGeneration]
+        \definame{CodeGeneration}: Produces target code (e.g., assembly, bytecode) from the annotated syntax tree or intermediate representation.
+    \end{sdefinition}
+    
+    \symdecl*{SyntaxTree}
+    \begin{sdefinition}[for=SyntaxTree]
+        \definame{SyntaxTree}: A tree representation of the syntactic structure of source code, generated during parsing.
+    \end{sdefinition}
+    
+    \symdecl*{Desugaring}
+    \begin{sdefinition}[for=Desugaring]
+        \definame{Desugaring}: Simplifies complex language constructs into simpler, uniform intermediate forms.
+    \end{sdefinition}
+    
+    \symdecl*{Optimization}
+    \begin{sdefinition}[for=Optimization]
+        \definame{Optimization}: Enhances the efficiency of the generated code through transformations like constant folding or instruction replacement.
+    \end{sdefinition}
+    
+    \symdecl*{ContextFreeGrammar}
+    \begin{sdefinition}[for=ContextFreeGrammar]
+        \definame{ContextFreeGrammar}: A set of production rules that define the syntax of a programming language.
+    \end{sdefinition}
+    
+    \symdecl*{FiniteAutomata}
+    \begin{sdefinition}[for=FiniteAutomata]
+        \definame{FiniteAutomata}: Theoretical machines used to model lexical analysis, recognizing patterns in input strings.
+    \end{sdefinition}
+    
+    \symdecl*{SyntaxDirectedTranslation}
+    \begin{sdefinition}[for=SyntaxDirectedTranslation]
+        \definame{SyntaxDirectedTranslation}: A method where translation rules are associated with the grammar of a language.
+    \end{sdefinition}
+    
+    \symdecl*{ErrorTypes}
+    \begin{sdefinition}[for=ErrorTypes]
+        \definame{ErrorTypes}: \begin{itemize}
+          \item Lexer Errors: Invalid characters in the source code.
+          \item Parser Errors: Syntactic issues like mismatched parentheses.
+          \item Type Errors: Applying operations to incompatible data types.
+        \end{itemize}
+    \end{sdefinition}
+    
+    \symdecl*{Bytecode}
+    \begin{sdefinition}[for=Bytecode]
+        \definame{Bytecode}: An intermediate, machine-independent code often executed by virtual machines (e.g., JVM).
+    \end{sdefinition}
+    
+    \symdecl*{BigStepSemantics}
+    \begin{sdefinition}[for=BigStepSemantics]
+        \definame{BigStepSemantics}: Describes how entire programs or large constructs are evaluated.
+    \end{sdefinition}
+    
+    \symdecl*{SmallStepSemantics}
+    \begin{sdefinition}[for=SmallStepSemantics]
+        \definame{SmallStepSemantics}: Describes computation as a sequence of individual steps or transitions.
+    \end{sdefinition}
+    
+    \symdecl*{CompilationPipeline}
+    \begin{sdefinition}[for=CompilationPipeline]
+        \definame{CompilationPipeline}: The sequence of phases in compilation, typically including lexing, parsing, type checking, and code generation.
+    \end{sdefinition}
+\end{smodule}
+	
+\end{document}

@@ -1,0 +1,37 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\begin{document}
+
+\begin{smodule}[title={Grammars}]{Grammars}
+
+    \symdecl*{Grammar}
+    \begin{sdefinition}[for=Grammar]
+        \definame{Grammar}: A formal description of the syntax of a programming language, composed of rules and production symbols.
+    \end{sdefinition}
+
+    \symdecl*{TerminalSymbol}
+    \begin{sdefinition}[for=TerminalSymbol]
+        \definame{TerminalSymbol}: The basic symbols from which strings are formed, typically representing actual characters or tokens.
+    \end{sdefinition}
+
+    \symdecl*{NonTerminalSymbol}
+    \begin{sdefinition}[for=NonTerminalSymbol]
+        \definame{NonTerminalSymbol}: Symbols that represent categories or abstractions in the grammar, expanded by production rules.
+    \end{sdefinition}
+
+    \symdecl*{ProductionRule}
+    \begin{sdefinition}[for=ProductionRule]
+        \definame{ProductionRule}: A rule in the grammar that describes how non-terminal symbols can be replaced with terminal symbols or other non-terminals.
+    \end{sdefinition}
+
+    \symdecl*{BNF}
+    \begin{sdefinition}[for=BNF]
+        \definame{BNF}: Backus-Naur Form, a notation used to specify the grammar of a programming language formally.
+    \end{sdefinition}
+
+\end{smodule}
+
+\end{document}

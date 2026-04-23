@@ -1,0 +1,455 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Deterministic PDAs and CFL Membership}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Deterministic PDAs and CFL Membership}]{DeterministicPDAsAndCFLMembership}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata/FormalLanguagesAndAutomata_defs?FormalLanguagesAndAutomata}
+\usemodule{ComputerScience/LexingParsingCompilingInterpreting/CompilationPhases/CompilationPhases_defs?Compilation}
+\usemodule{ComputerScience/LexingParsingCompilingInterpreting/Grammars/Grammars_defs?Grammars}
+\usemodule{ComputerScience/LexingParsingCompilingInterpreting/Parsing/Parsing_defs?Parsing}
+
+\section{Overview}
+
+These notes rewrite Theory 2 Lecture 17 into prose while keeping the main technical details from the slides.
+The lecture has two main parts:
+\begin{itemize}
+    \item \sr{deterministic pushdown automaton}{deterministic pushdown automata} (DPAs); and
+    \item the \sr{CYK membership algorithm}{CYK algorithm} for testing membership in a \sn{context-free language}.
+\end{itemize}
+
+The first part studies how determinism changes the power of \sr{pushdown automaton}{pushdown automata}.
+The second part gives a dynamic-programming algorithm for deciding whether a given string belongs to the language of a \sr{Compilation?ContextFreeGrammar}{context-free grammar} in \sn{Chomsky normal form}.
+
+\section{Deterministic Pushdown Automata}
+
+\subsection{Why deterministic PDAs matter}
+
+The \sr{pushdown automaton}{pushdown automata} considered earlier in the course were \sr{nondeterministic pushdown automaton}{nondeterministic pushdown automata}.
+That is the right level of generality for all context-free languages, but deterministic pushdown automata are still important.
+In particular, parsers for programming-language syntax behave like DPAs.
+For that reason, DPAs give insight into which language constructs are suitable for deterministic parsing and which ones inherently require nondeterminism.
+
+\subsection{What determinism means for a PDA}
+
+A \sn{deterministic pushdown automaton} is a \sn{pushdown automaton} for which there is never a genuine choice of move.
+The slides formulate this in two parts:
+\begin{enumerate}
+    \item for a given state, input symbol (including $\lambda$), and stack symbol, there is at most one possible transition; and
+    \item there is never a choice between consuming a real input symbol and taking a competing $\lambda$-transition.
+\end{enumerate}
+
+Unlike deterministic finite-state automata, DPAs are still allowed to have $\lambda$-transitions.
+The point is not to ban them, but to ensure that they do not introduce branching choices.
+
+\subsection{Formal definition}
+
+A \sn{deterministic pushdown automaton} has the same underlying form as a \sn{nondeterministic pushdown automaton}:
+\[
+P = \langle Q, \Sigma, \Gamma, \delta, q_0, z_0, F \rangle
+\]
+with transition function
+\[
+\delta : Q \times (\Sigma \cup \{\lambda\}) \times \Gamma \to 2^{Q \times \Gamma^*}.
+\]
+
+The machine is deterministic if and only if the following two conditions hold:
+\begin{enumerate}
+    \item $\delta(q,a,X)$ has at most one member for every $q \in Q$, $a \in \Sigma \cup \{\lambda\}$, and $X \in \Gamma$; and
+    \item if $\delta(q,a,X)$ is non-empty for some $a \in \Sigma$ and $X \in \Gamma$, then $\delta(q,\lambda,X)$ must be empty.
+\end{enumerate}
+
+\subsection{A DPA example}
+
+The lecture gives a DPA for the language
+\[
+L = \{wcw^R \mid w \in \{0,1\}^*\},
+\]
+where $w^R$ denotes string reversal.
+
+Its transitions can be grouped as follows.
+
+\paragraph{Phase 1: read the first half and push it onto the stack.}
+At state $q_0$ the machine reads symbols before the middle marker $c$ and pushes them:
+\begin{itemize}
+    \item $0,z_0/0z_0$
+    \item $0,1/01$
+    \item $0,0/00$
+    \item $1,z_0/1z_0$
+    \item $1,1/11$
+    \item $1,0/10$
+\end{itemize}
+
+\paragraph{Phase 2: detect the middle.}
+The symbol $c$ marks the split between the two halves and moves the machine from $q_0$ to $q_1$ without changing the stack content:
+\begin{itemize}
+    \item $c,1/1$
+    \item $c,0/0$
+    \item $c,z_0/z_0$
+\end{itemize}
+
+\paragraph{Phase 3: match the second half against the stack.}
+At $q_1$ the machine checks the reverse half by popping matching symbols:
+\begin{itemize}
+    \item $1,1/\lambda$
+    \item $0,0/\lambda$
+\end{itemize}
+
+\paragraph{Phase 4: accept.}
+Once only the bottom-of-stack marker remains, the machine moves to $q_2$:
+\begin{itemize}
+    \item $\lambda,z_0/z_0$
+\end{itemize}
+
+This machine is deterministic in the sense of \sr{deterministic pushdown automaton}{deterministic pushdown automata} because the symbol $c$ tells it exactly when to stop pushing and start matching.
+There is no need to guess the middle of the word.
+
+\subsection{Accepting computation for $01c10$}
+
+The lecture gives the following accepting sequence:
+\[
+(q_0,01c10,z_0)
+\vdash (q_0,1c10,0z_0)
+\vdash (q_0,c10,10z_0)
+\vdash (q_1,10,10z_0)
+\vdash (q_1,0,0z_0)
+\vdash (q_1,\lambda,z_0)
+\vdash (q_2,\lambda,z_0).
+\]
+
+This sequence shows the intended strategy very clearly.
+The automaton first stores the prefix $01$ on the stack, then uses the marker $c$ to switch to matching mode, and finally pops the stack while reading $10$.
+
+\subsection{Why $\{ww^R \mid w \in \{0,1\}^*\}$ is not deterministic}
+
+The slides next compare the previous DPA with an \sr{nondeterministic pushdown automaton}{NPDA} for
+\[
+L = \{ww^R \mid w \in \{0,1\}^*\}.
+\]
+
+The NPDA has essentially the same push and match behaviour as before, but the move from the pushing phase to the matching phase is done using $\lambda$ rather than a visible middle marker.
+That is exactly why it is nondeterministic.
+The machine must guess when the first half has ended.
+If it guesses too early or too late, the run fails.
+Without an explicit separator such as $c$, there is no deterministic way to know where the midpoint is.
+
+\subsection{What languages are accepted by DPAs}
+
+Assuming \sn{final-state acceptance} for the moment, the lecture states:
+\begin{itemize}
+    \item every \sn{regular language} can be recognised by a DPA; and
+    \item DPA languages form a strict subset of the \sr{context-free language}{context-free languages}.
+\end{itemize}
+
+The inclusion of regular languages is intuitive: a DFA can be simulated by a DPA that simply ignores its stack.
+The strictness follows from languages such as $\{ww^R \mid w \in \{0,1\}^*\}$, which are context-free but not deterministic context-free.
+
+\subsection{DPAs and unambiguous grammars}
+
+Every language accepted by a DPA has an \sn{unambiguous grammar}, that is, a grammar in which every string has a unique \sr{Parsing?ParseTree}{parse tree}.
+However, the converse is false.
+
+The lecture gives
+\[
+L = \{ww^R \mid w \in \{0,1\}^*\}
+\]
+as an example.
+This language has the unambiguous grammar
+\[
+S \to 0S0 \mid 1S1 \mid \lambda,
+\]
+but it still cannot be recognised by a DPA.
+Therefore the DPA languages are a proper subset of the context-free languages that have unambiguous grammars.
+
+\subsection{Acceptance by empty stack}
+
+Earlier in the course, \sr{nondeterministic pushdown automaton}{NPDAs} accepting by \sn{final-state acceptance} and by \sn{empty-stack acceptance} were shown to be equivalent in expressive power.
+For DPAs, this is no longer true.
+The lecture emphasises that DPAs accepting by \sn{empty-stack acceptance} have very limited language-recognising power.
+
+The key restriction is this:
+\begin{quote}
+If a language $L$ contains strings $x$ and $xy$ where $x \in \Sigma^*$ and $y \in \Sigma^+$, so that $x$ is a prefix of $xy$, then $L$ cannot be recognised by a DPA by empty stack.
+\end{quote}
+
+As an immediate example, the language $\{0\}^*$ cannot be recognised by a DPA by empty stack, because every accepted string is a prefix of longer accepted strings.
+
+\subsection{Small example: $\{0,00\}$}
+
+The slides first illustrate the argument using the language $\{0,00\}$.
+Assume there is a DPA $P$ accepting this language by empty stack.
+When reading the string $0$, the machine must have a run of the form
+\[
+(q_0,0,z_0) \vdash^* (q_1,0,\alpha) \vdash^* (q_2,\lambda,\beta) \vdash^* (q_3,\lambda,\lambda).
+\]
+
+Because the automaton is deterministic, reading the longer string $00$ must begin with exactly the same behaviour:
+\[
+(q_0,00,z_0) \vdash^* (q_1,00,\alpha) \vdash^* (q_2,0,\beta) \vdash^* (q_3,0,\lambda).
+\]
+
+At that point there is still one input symbol left, so the string $00$ is not yet accepted.
+But the stack is already empty, so no further moves are possible.
+Hence $00$ must be rejected, contradicting the assumption.
+
+\subsection{General proof for prefix languages}
+
+The lecture then proves the general statement.
+Suppose $x \in L$ and $xy \in L$ where $y \neq \lambda$.
+If a DPA $P$ accepted $L$ by empty stack, then while reading $x$ it would have to reach empty stack:
+\[
+(q_0,x,z_0) \vdash^* (p,\lambda,\lambda)
+\]
+for some state $p$.
+
+Because the machine is deterministic, the longer input $xy$ must follow the same run prefix:
+\[
+(q_0,xy,z_0) \vdash^* (p,y,\lambda).
+\]
+
+Since $y \neq \lambda$, the machine has not finished reading the input.
+But the stack is already empty, so no further transitions can be made.
+Therefore $xy$ would be rejected, contradicting the assumption that $xy \in L$.
+So no such DPA can exist.
+
+\section{Testing Membership of a Context-Free Language}
+
+\subsection{The problem}
+
+The second half of the lecture asks:
+given a \sr{Compilation?ContextFreeGrammar}{grammar} $G$ and a string $w$, can we test efficiently whether $w$ belongs to the language generated by $G$?
+
+One brute-force approach would be to search through all possible \sr{Parsing?ParseTree}{parse trees} for a grammar in \sr{Chomsky normal form}{CNF} and check whether any of them derive $w$.
+The lecture notes that this would be exponential in the length of $w$.
+
+The better method is the \sr{CYK membership algorithm}{CYK algorithm}, due to Cocke, Younger, and Kasami, which runs in time $O(n^3)$.
+
+\subsection{The basic CYK idea}
+
+The algorithm keeps track of which non-terminals can derive which substrings of the input.
+These local derivability facts are then combined until we know whether the start symbol can derive the whole string.
+
+We assume the grammar is in \sn{Chomsky normal form}, so every \sr{Grammars?ProductionRule}{production} is of one of the forms
+\[
+A \to BC
+\qquad \text{or} \qquad
+A \to a.
+\]
+
+The lecture gives the following motivating inference.
+Suppose
+\[
+w = w_1w_2\cdots w_n,
+\]
+and we already know that $N_3$ derives $w_3\cdots w_7$ and $N_8$ derives $w_8\cdots w_{11}$.
+If the grammar contains the rule
+\[
+N_2 \to N_3N_8,
+\]
+then we can conclude that $N_2$ derives the longer substring $w_3\cdots w_{11}$.
+In symbols:
+\[
+N_3 \Rightarrow^* w_3\cdots w_7,
+\qquad
+N_8 \Rightarrow^* w_8\cdots w_{11},
+\qquad
+N_2 \to N_3N_8
+\]
+imply
+\[
+N_2 \Rightarrow^* w_3\cdots w_{11}.
+\]
+
+\subsection{The CYK table}
+
+For each substring $w_i\cdots w_j$, define $X_{ij}$ to be the set of \sr{Grammars?NonTerminalSymbol}{non-terminals} $N$ such that
+\[
+N \Rightarrow^* w_i\cdots w_j.
+\]
+
+These sets are arranged in a triangular table.
+For a word of length $5$, the shape is:
+\[
+\begin{array}{ccccc}
+X_{15} \\
+X_{14} & X_{25} \\
+X_{13} & X_{24} & X_{35} \\
+X_{12} & X_{23} & X_{34} & X_{45} \\
+X_{11} & X_{22} & X_{33} & X_{44} & X_{55}
+\end{array}
+\]
+with the terminals $w_1,w_2,w_3,w_4,w_5$ below the bottom row.
+
+Each row corresponds to substrings of a fixed length.
+The bottom row has length $1$, the next row has length $2$, and so on.
+The table is built from the bottom up.
+The overall goal is to determine whether the start symbol $S$ belongs to the top entry $X_{1n}$.
+
+\subsection{Base case}
+
+If the substring length is $1$, then we are looking only at terminal productions.
+So
+\[
+X_{ii} = \{A \mid A \to w_i \text{ is a production}\}.
+\]
+
+\subsection{Inductive step}
+
+Now consider $X_{ij}$ for a substring of length greater than $1$.
+Because the grammar is in \sr{Chomsky normal form}{CNF}, a derivation of $w_i\cdots w_j$ must begin with a rule
+\[
+A \to BC
+\]
+and a split point $k$ with $i \leq k < j$ such that
+\[
+B \Rightarrow^* w_i\cdots w_k
+\qquad \text{and} \qquad
+C \Rightarrow^* w_{k+1}\cdots w_j.
+\]
+
+Therefore $A$ belongs to $X_{ij}$ exactly when there exist $B$, $C$, and $k$ such that:
+\begin{itemize}
+    \item $i \leq k < j$,
+    \item $B \in X_{ik}$,
+    \item $C \in X_{(k+1)j}$, and
+    \item $A \to BC$ is a \sr{Grammars?ProductionRule}{production rule} of the grammar.
+\end{itemize}
+
+In symbols:
+\[
+X_{ij}
+=
+\bigcup_{i \leq k < j}
+\{A : A \to BC,\; B \in X_{ik},\; C \in X_{(k+1)j}\}.
+\]
+
+The slides illustrate this with examples such as:
+\begin{itemize}
+    \item to compute $X_{12}$, only $X_{11}$ and $X_{22}$ need to be considered;
+    \item to compute $X_{24}$, we must consider both the splits $(X_{23},X_{44})$ and $(X_{22},X_{34})$.
+\end{itemize}
+
+\subsection{Complexity}
+
+There are $n(n+1)/2$ table entries, which is $O(n^2)$.
+Each entry may require checking up to $n$ split points.
+Hence the overall running time is
+\[
+O(n^3).
+\]
+
+\section{Worked CYK Example}
+
+The lecture works through the \sr{Compilation?ContextFreeGrammar}{grammar}
+\[
+S \to AB,
+\qquad
+A \to BB \mid a,
+\qquad
+B \to AB \mid b
+\]
+and asks whether the string $aabbb$ is derivable.
+
+\subsection{Bottom row}
+
+The length-$1$ substrings give:
+\[
+X_{11} = \{A\},
+\quad
+X_{22} = \{A\},
+\quad
+X_{33} = \{B\},
+\quad
+X_{44} = \{B\},
+\quad
+X_{55} = \{B\}.
+\]
+
+\subsection{Length-2 substrings}
+
+Using the recurrence:
+\[
+X_{12} = \emptyset,
+\qquad
+X_{23} = \{S,B\},
+\qquad
+X_{34} = \{A\},
+\qquad
+X_{45} = \{A\}.
+\]
+
+\subsection{Length-3 substrings}
+
+Next:
+\[
+X_{13} = \{S,B\},
+\qquad
+X_{24} = \{A\},
+\qquad
+X_{35} = \{S,B\}.
+\]
+
+\subsection{Length-4 substrings}
+
+Then:
+\[
+X_{14} = \{A\},
+\qquad
+X_{25} = \{S,B\}.
+\]
+
+\subsection{Full string}
+
+Finally:
+\[
+X_{15} = \{S,B\}.
+\]
+
+Since the start symbol $S$ is in $X_{15}$, the string $aabbb$ is derivable in the grammar.
+
+\subsection{Final table}
+
+The completed table from the slides can therefore be written as
+\[
+\begin{array}{ccccc}
+\{S,B\} \\
+\{A\} & \{S,B\} \\
+\{S,B\} & \{A\} & \{S,B\} \\
+\emptyset & \{S,B\} & \{A\} & \{A\} \\
+\{A\} & \{A\} & \{B\} & \{B\} & \{B\}
+\end{array}
+\]
+with terminals
+\[
+a \qquad a \qquad b \qquad b \qquad b
+\]
+underneath.
+
+\subsection{Software note}
+
+The lecture ends by mentioning software support.
+JFLAP 7.1 includes a CYK parser, which is much faster than brute-force parsing, and JFLAP 8.0 beta includes an animation showing how the CYK table is constructed.
+
+\section{Summary}
+
+Lecture 17 develops three linked ideas:
+\begin{itemize}
+    \item the definition of \sr{deterministic pushdown automaton}{deterministic pushdown automata};
+    \item the difference between \sn{final-state acceptance} and \sn{empty-stack acceptance} for DPAs; and
+    \item the \sr{CYK membership algorithm}{CYK membership test} for grammars in \sn{Chomsky normal form}.
+\end{itemize}
+
+The main conceptual lesson is that determinism is a real restriction for \sr{pushdown automaton}{pushdown automata}.
+It rules out some \sr{context-free language}{context-free languages} even when those languages are described by an \sn{unambiguous grammar}.
+At the same time, \sr{context-free language}{context-free membership} can still be decided efficiently in \sr{Chomsky normal form}{CNF} using the \sr{CYK membership algorithm}{CYK algorithm} and its bottom-up substring table.
+
+\end{smodule}
+\end{document}

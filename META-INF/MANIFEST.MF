@@ -1,0 +1,4 @@
+id:ABadyal
+ns:http://arjunbadyal.github.io/ABadyal
+narration-base:http://arjunbadyal.github.io/ABadyal
+format:stex
