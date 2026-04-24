@@ -10,9 +10,9 @@ BUILD_ON_START="${BUILD_ON_START:-auto}"
 DEFAULT_PORT=4382
 PORT="${1:-$DEFAULT_PORT}"
 STARTUP_FILE="$(mktemp /tmp/abadyal-mmt-stex.XXXXXX.msl)"
-ARCHIVE_BROWSER_URL="http://$HOST:$PORT/:sTeX/browser?archive=$ARCHIVE_ID"
+ARCHIVE_BROWSER_URL="http://$HOST:$PORT/:sTeX/browser?archive=$ARCHIVE_ID&filepath=index.xhtml"
 DEFS_VIEWER_URL="http://$HOST:$PORT/:sTeX/browser?archive=$ARCHIVE_ID&filepath=ComputerScience/FormalLanguagesAndAutomata/FormalLanguagesAndAutomata_defs.xhtml"
-LECTURE_VIEWER_URL="http://$HOST:$PORT/:sTeX/browser?archive=$ARCHIVE_ID&filepath=ComputerScience/FormalLanguagesAndAutomata/DeterministicPDAsAndCFLMembership.xhtml"
+NOTES_VIEWER_URL="http://$HOST:$PORT/:sTeX/browser?archive=$ARCHIVE_ID&filepath=ComputerScience/FormalLanguagesAndAutomata/DeterministicPDAsAndCFLMembership.xhtml"
 
 cleanup() {
   rm -f "$STARTUP_FILE"
@@ -38,11 +38,11 @@ Build behavior:
   BUILD_ON_START=0 starts the server without building.
 
 Useful URLs:
-  Browser:
-    http://$HOST:$DEFAULT_PORT/:sTeX/browser?archive=$ARCHIVE_ID
+  Archive index:
+    http://$HOST:$DEFAULT_PORT/:sTeX/browser?archive=$ARCHIVE_ID&filepath=index.xhtml
   Formal Languages defs:
     http://$HOST:$DEFAULT_PORT/:sTeX/browser?archive=$ARCHIVE_ID&filepath=ComputerScience/FormalLanguagesAndAutomata/FormalLanguagesAndAutomata_defs.xhtml
-  Lecture 17 notes:
+  Deterministic PDA notes:
     http://$HOST:$DEFAULT_PORT/:sTeX/browser?archive=$ARCHIVE_ID&filepath=ComputerScience/FormalLanguagesAndAutomata/DeterministicPDAsAndCFLMembership.xhtml
 
 Notes:
@@ -60,7 +60,7 @@ fi
 RUN_BUILD=0
 if [[ "$BUILD_ON_START" == "1" ]]; then
   RUN_BUILD=1
-elif [[ "$BUILD_ON_START" == "auto" && ! -d "$ROOT_DIR/xhtml/ComputerScience" ]]; then
+elif [[ "$BUILD_ON_START" == "auto" && ( ! -f "$ROOT_DIR/xhtml/index.xhtml" || ! -d "$ROOT_DIR/xhtml/ComputerScience" ) ]]; then
   RUN_BUILD=1
 fi
 
@@ -80,6 +80,7 @@ fi
   printf '%s\n' "extension info.kwarc.mmt.stex.STeXServer"
 
   if [[ "$RUN_BUILD" == "1" ]]; then
+    printf 'build %s fullstex %s\n' "$ARCHIVE_ID" "index.tex"
     printf 'build %s fullstex %s\n' "$ARCHIVE_ID" "ComputerScience/ComputerScience_defs.tex"
     printf 'build %s fullstex %s\n' "$ARCHIVE_ID" "ComputerScience/FormalLanguagesAndAutomata/DeterministicPDAsAndCFLMembership.tex"
   fi
@@ -93,14 +94,14 @@ Starting MMT+sTeX for archive $ARCHIVE_ID
 Build on start:
   $RUN_BUILD
 
-Browser:
+Archive index:
   $ARCHIVE_BROWSER_URL
 
 Formal Languages defs:
   $DEFS_VIEWER_URL
 
-Lecture 17 notes:
-  $LECTURE_VIEWER_URL
+Deterministic PDA notes:
+  $NOTES_VIEWER_URL
 
 Use the browser URLs above for the full viewer with semantic highlighting.
 Avoid /:sTeX/document?... unless you explicitly want the raw fragment endpoint.

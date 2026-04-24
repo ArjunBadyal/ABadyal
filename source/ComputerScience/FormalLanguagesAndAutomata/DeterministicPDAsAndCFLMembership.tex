@@ -19,8 +19,8 @@
 
 \section{Overview}
 
-These notes rewrite Theory 2 Lecture 17 into prose while keeping the main technical details from the slides.
-The lecture has two main parts:
+This note explains deterministic pushdown automata and the CYK membership algorithm in a self-contained way.
+There are two main parts:
 \begin{itemize}
     \item \sr{deterministic pushdown automaton}{deterministic pushdown automata} (DPAs); and
     \item the \sr{CYK membership algorithm}{CYK algorithm} for testing membership in a \sn{context-free language}.
@@ -33,15 +33,14 @@ The second part gives a dynamic-programming algorithm for deciding whether a giv
 
 \subsection{Why deterministic PDAs matter}
 
-The \sr{pushdown automaton}{pushdown automata} considered earlier in the course were \sr{nondeterministic pushdown automaton}{nondeterministic pushdown automata}.
-That is the right level of generality for all context-free languages, but deterministic pushdown automata are still important.
+Nondeterministic \sr{pushdown automaton}{pushdown automata} are the right level of generality for all context-free languages, but deterministic pushdown automata are still important.
 In particular, parsers for programming-language syntax behave like DPAs.
 For that reason, DPAs give insight into which language constructs are suitable for deterministic parsing and which ones inherently require nondeterminism.
 
 \subsection{What determinism means for a PDA}
 
 A \sn{deterministic pushdown automaton} is a \sn{pushdown automaton} for which there is never a genuine choice of move.
-The slides formulate this in two parts:
+This determinism condition has two parts:
 \begin{enumerate}
     \item for a given state, input symbol (including $\lambda$), and stack symbol, there is at most one possible transition; and
     \item there is never a choice between consuming a real input symbol and taking a competing $\lambda$-transition.
@@ -69,7 +68,7 @@ The machine is deterministic if and only if the following two conditions hold:
 
 \subsection{A DPA example}
 
-The lecture gives a DPA for the language
+A standard DPA example recognises the language
 \[
 L = \{wcw^R \mid w \in \{0,1\}^*\},
 \]
@@ -114,7 +113,7 @@ There is no need to guess the middle of the word.
 
 \subsection{Accepting computation for $01c10$}
 
-The lecture gives the following accepting sequence:
+The following accepting sequence illustrates the computation:
 \[
 (q_0,01c10,z_0)
 \vdash (q_0,1c10,0z_0)
@@ -130,7 +129,7 @@ The automaton first stores the prefix $01$ on the stack, then uses the marker $c
 
 \subsection{Why $\{ww^R \mid w \in \{0,1\}^*\}$ is not deterministic}
 
-The slides next compare the previous DPA with an \sr{nondeterministic pushdown automaton}{NPDA} for
+The previous DPA can be compared with an \sr{nondeterministic pushdown automaton}{NPDA} for
 \[
 L = \{ww^R \mid w \in \{0,1\}^*\}.
 \]
@@ -143,7 +142,7 @@ Without an explicit separator such as $c$, there is no deterministic way to know
 
 \subsection{What languages are accepted by DPAs}
 
-Assuming \sn{final-state acceptance} for the moment, the lecture states:
+Assuming \sn{final-state acceptance}, deterministic languages satisfy:
 \begin{itemize}
     \item every \sn{regular language} can be recognised by a DPA; and
     \item DPA languages form a strict subset of the \sr{context-free language}{context-free languages}.
@@ -157,7 +156,7 @@ The strictness follows from languages such as $\{ww^R \mid w \in \{0,1\}^*\}$, w
 Every language accepted by a DPA has an \sn{unambiguous grammar}, that is, a grammar in which every string has a unique \sr{Parsing?ParseTree}{parse tree}.
 However, the converse is false.
 
-The lecture gives
+The language
 \[
 L = \{ww^R \mid w \in \{0,1\}^*\}
 \]
@@ -171,9 +170,9 @@ Therefore the DPA languages are a proper subset of the context-free languages th
 
 \subsection{Acceptance by empty stack}
 
-Earlier in the course, \sr{nondeterministic pushdown automaton}{NPDAs} accepting by \sn{final-state acceptance} and by \sn{empty-stack acceptance} were shown to be equivalent in expressive power.
+\sr{nondeterministic pushdown automaton}{NPDAs} accepting by \sn{final-state acceptance} and by \sn{empty-stack acceptance} are equivalent in expressive power.
 For DPAs, this is no longer true.
-The lecture emphasises that DPAs accepting by \sn{empty-stack acceptance} have very limited language-recognising power.
+DPAs accepting by \sn{empty-stack acceptance} have very limited language-recognising power.
 
 The key restriction is this:
 \begin{quote}
@@ -184,7 +183,7 @@ As an immediate example, the language $\{0\}^*$ cannot be recognised by a DPA by
 
 \subsection{Small example: $\{0,00\}$}
 
-The slides first illustrate the argument using the language $\{0,00\}$.
+The language $\{0,00\}$ illustrates the argument.
 Assume there is a DPA $P$ accepting this language by empty stack.
 When reading the string $0$, the machine must have a run of the form
 \[
@@ -202,7 +201,7 @@ Hence $00$ must be rejected, contradicting the assumption.
 
 \subsection{General proof for prefix languages}
 
-The lecture then proves the general statement.
+The same reasoning gives the general statement.
 Suppose $x \in L$ and $xy \in L$ where $y \neq \lambda$.
 If a DPA $P$ accepted $L$ by empty stack, then while reading $x$ it would have to reach empty stack:
 \[
@@ -224,11 +223,11 @@ So no such DPA can exist.
 
 \subsection{The problem}
 
-The second half of the lecture asks:
+The membership problem is:
 given a \sr{Compilation?ContextFreeGrammar}{grammar} $G$ and a string $w$, can we test efficiently whether $w$ belongs to the language generated by $G$?
 
 One brute-force approach would be to search through all possible \sr{Parsing?ParseTree}{parse trees} for a grammar in \sr{Chomsky normal form}{CNF} and check whether any of them derive $w$.
-The lecture notes that this would be exponential in the length of $w$.
+This brute-force method is exponential in the length of $w$.
 
 The better method is the \sr{CYK membership algorithm}{CYK algorithm}, due to Cocke, Younger, and Kasami, which runs in time $O(n^3)$.
 
@@ -244,7 +243,7 @@ A \to BC
 A \to a.
 \]
 
-The lecture gives the following motivating inference.
+The following inference motivates the dynamic-programming recurrence.
 Suppose
 \[
 w = w_1w_2\cdots w_n,
@@ -331,7 +330,7 @@ X_{ij}
 \{A : A \to BC,\; B \in X_{ik},\; C \in X_{(k+1)j}\}.
 \]
 
-The slides illustrate this with examples such as:
+For example:
 \begin{itemize}
     \item to compute $X_{12}$, only $X_{11}$ and $X_{22}$ need to be considered;
     \item to compute $X_{24}$, we must consider both the splits $(X_{23},X_{44})$ and $(X_{22},X_{34})$.
@@ -348,7 +347,7 @@ O(n^3).
 
 \section{Worked CYK Example}
 
-The lecture works through the \sr{Compilation?ContextFreeGrammar}{grammar}
+Consider the \sr{Compilation?ContextFreeGrammar}{grammar}
 \[
 S \to AB,
 \qquad
@@ -417,7 +416,7 @@ Since the start symbol $S$ is in $X_{15}$, the string $aabbb$ is derivable in th
 
 \subsection{Final table}
 
-The completed table from the slides can therefore be written as
+The completed table can therefore be written as
 \[
 \begin{array}{ccccc}
 \{S,B\} \\
@@ -433,14 +432,13 @@ a \qquad a \qquad b \qquad b \qquad b
 \]
 underneath.
 
-\subsection{Software note}
+\subsection{Software support}
 
-The lecture ends by mentioning software support.
 JFLAP 7.1 includes a CYK parser, which is much faster than brute-force parsing, and JFLAP 8.0 beta includes an animation showing how the CYK table is constructed.
 
 \section{Summary}
 
-Lecture 17 develops three linked ideas:
+This note develops three linked ideas:
 \begin{itemize}
     \item the definition of \sr{deterministic pushdown automaton}{deterministic pushdown automata};
     \item the difference between \sn{final-state acceptance} and \sn{empty-stack acceptance} for DPAs; and
