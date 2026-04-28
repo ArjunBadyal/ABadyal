@@ -1,0 +1,161 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Further Turing Machine Models, and Combining Turing Machines}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Further Turing Machine Models, and Combining Turing Machines}]{CombiningTuringMachines}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?IntroductionToFormalLanguagesAndAutomata}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?StandardTuringMachines}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?ExtendingTuringMachines}
+
+\symdecl*{multi-tape Turing machine}
+\symdecl*{multi-dimensional Turing machine}
+\symdecl*{non-deterministic Turing machine}
+\symdecl*{universal Turing machine}
+
+\section{Overview}
+
+This note revisits the \sn{Turing machine} from a more substantial angle. We introduce \sns{multi-tape Turing machine}, \sns{multi-dimensional Turing machine}, and \sns{non-deterministic Turing machine}; argue that each is equivalent in expressive power to the standard model; describe a \sn{universal Turing machine} that takes the description of a Turing machine and a tape contents as input and simulates the machine; and finally show how to combine standard \sns{Turing machine} into larger machines that compute richer functions.
+
+\section{Multi-tape Turing machines}
+
+\begin{sdefinition}[for=multi-tape Turing machine]
+A \definame{multi-tape Turing machine} is a \sn{Turing machine} with several tapes, each with its own read--write head, all of which are independently controlled. An $n$-tape \sn{multi-tape Turing machine} is a tuple $M = \langle Q, \Sigma, \Gamma, \delta, q_0, \Box, F \rangle$ in which all components are as for the standard model except that
+\[
+\delta : Q \times \Gamma^n \to Q \times \Gamma^n \times \{L, R\}^n.
+\]
+\end{sdefinition}
+
+For example, with $n = 2$, a transition $\delta(q_0, b, e) = (q_1, x, y, L, R)$ can occur only when in state $q_0$, with $b$ on tape $1$ and $e$ on tape $2$ under their respective heads. The effect is to replace $b$ with $x$ on tape $1$ and $e$ with $y$ on tape $2$, then move the tape-$1$ head left and the tape-$2$ head right, and enter state $q_1$.
+
+\subsection{Equivalence with the standard model}
+
+A standard TM can be simulated by a \sn{multi-tape Turing machine} that uses only one of its tapes for useful work. In the other direction, a multi-tape TM can be simulated by a standard TM using a similar idea to the \sn{off-line Turing machine}: a $2$-tape TM is simulated by a $4$-track standard TM in which the first two tracks represent tape $1$'s contents and head position and the other two tracks represent tape $2$. Simulating a single multi-tape transition through these four tracks is tedious but not deep; the upshot is that whatever can be computed with a multi-tape machine can also be computed with the standard model.
+
+\subsection{Why bother with multi-tape Turing machines?}
+
+\sns{multi-tape Turing machine} can make computations much less unwieldy. Consider a standard TM accepting $\{a^n b^n\}$: to ensure equal numbers of $a$s and $b$s, we cross off each $a$ from the start of the input, scan to find a $b$, cross it off, scan back to the leftmost remaining $a$, and so on. Now consider a $2$-tape TM accepting the same language: copy each $a$ from tape $1$ to tape $2$; on reaching the end of the $a$s, run the head along the $b$s on tape $1$ and the $a$s on tape $2$ in lockstep. There is no need for repeated back-and-forth movements of the tape head. Equivalence is only about whether automata classes \emph{can} compute the same things, not how efficiently they do so or how easy they are to program.
+
+\section{Multi-dimensional Turing machines}
+
+\begin{sdefinition}[for=multi-dimensional Turing machine]
+A \definame{multi-dimensional Turing machine} extends the tape to more than one dimension. A two-dimensional \sn{multi-dimensional Turing machine} has \sn{transition function} of signature
+\[
+\delta : Q \times \Gamma \to Q \times \Gamma \times \{L, R, U, D\},
+\]
+where $U$ and $D$ represent moving the head up or down.
+\end{sdefinition}
+
+An informal simulation argument shows that the class of \sns{multi-dimensional Turing machine} is equivalent to the class of standard \sns{Turing machine}; the simulation linearises the two-dimensional grid onto a single tape with bookkeeping for the row/column indices.
+
+\section{Non-deterministic Turing machines}
+
+\begin{sdefinition}[for=non-deterministic Turing machine]
+A \definame{non-deterministic Turing machine} replaces the deterministic \sn{transition function} with a set-valued transition relation
+\[
+\delta : Q \times \Gamma \to 2^{Q \times \Gamma \times \{L, R\}},
+\]
+allowing several possible outcomes from a single (state, tape symbol) pair.
+\end{sdefinition}
+
+For example, $\delta(q_0, a) = \{(q_1, b, R), (q_2, c, L)\}$ permits both moves $q_0 a a a \vdash b q_1 a a$ and $q_0 a a a \vdash q_2 \Box c a a$. \sns{non-deterministic Turing machine} are normally thought of as acceptors rather than transducers: a string $w$ is accepted if there is \emph{any} possible sequence of moves
+\[
+q_0 w \vdash^* x_1 q_f x_2
+\]
+with $q_f \in F$. A language $L$ is accepted if every $w \in L$ has at least one such accepting computation; some branches may lead to non-accepting states or even non-halting outcomes, but this is not a problem.
+
+\subsection{Equivalence with the deterministic model}
+
+It is not so easy to see that \sns{non-deterministic Turing machine} are equivalent to deterministic ones, but they are. We can simulate a \sn{non-deterministic Turing machine} with a standard \sn{Turing machine} by representing the currently-possible configurations of the non-deterministic TM on the tape, separated by markers. For instance the tape
+\[
+\Box\ \times\ a\ q_0\ a\ a\ +\ b\ b\ q_1\ a\ \times\ \Box
+\]
+might represent the two configurations $a q_0 a a$ and $b b q_1 a$. The simulating standard TM updates this list of configurations according to the program of the non-deterministic TM, possibly adding extra configurations on each step. The construction is tedious but possible.
+
+\section{A Universal Turing Machine}
+
+\begin{sdefinition}[for=universal Turing machine]
+A \definame{universal Turing machine} is a \sn{Turing machine} that is reprogrammable: given as input the description of a TM $M$ together with an input string $w$, it simulates the computation of $M$ on $w$.
+\end{sdefinition}
+
+Once the \sn{transition function} $\delta$ of a TM is defined, its function is restricted -- the same TM cannot suddenly compute a different function. So how can TMs possibly represent a general-purpose computer that can be reprogrammed to do many different things? The answer is the \sn{universal Turing machine}.
+
+The basic idea is to use a $3$-tape \sn{multi-tape Turing machine}. Tape $1$ contains an encoding of $M$, tape $2$ contains the tape contents for $M$, and tape $3$ contains the internal state of $M$. The universal machine looks at tapes $2$ and $3$ to determine the configuration of $M$, and consults tape $1$ to see what $M$ would do in that configuration; tapes $2$ and $3$ are then modified as necessary. By the equivalence between multi-tape and standard TMs, this can be turned into a single-tape construction.
+
+\section{Combining Turing machines}
+
+It is often easier to design a complicated TM as a combination of simpler TMs. Suppose we want a TM to compute
+\[
+f(x, y) = \begin{cases} x + y & \text{if } x \geq y\\ 0 & \text{if } x < y \end{cases}
+\]
+where $x$ and $y$ are positive integers in unary, separated by a $0$ on the tape. In an earlier note we sketched a TM to add unary integers; we can combine it with a ``comparison'' TM and an ``eraser'' TM to compute $f$.
+
+\subsection{Block structure}
+
+A \emph{block diagram} for $f$ is shown below. The Comparer $C$ routes its input to either the Adder $A$ (if $x \geq y$) or the Eraser $E$ (if $x < y$); each branch produces the appropriate output:
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={draw, thick, font=\small, minimum height=0.9cm, rounded corners=1pt, align=center}, node distance=1.4cm and 1.6cm]
+  \node (input)   [draw=none] {$x, y$};
+  \node (compare) [right=of input]               {Comparer\\$C$};
+  \node (adder)   [above right=0.2cm and 1.2cm of compare] {Adder\\$A$};
+  \node (eraser)  [below right=0.2cm and 1.2cm of compare] {Eraser\\$E$};
+  \node (out)     [right=2.6cm of compare, draw=none] {$f(x, y)$};
+  \draw[->, thick] (input) -- (compare);
+  \draw[->, thick] (compare.north east) -- node [above, draw=none, fill=none] {$x \geq y$} (adder.west);
+  \draw[->, thick] (compare.south east) -- node [below, draw=none, fill=none] {$x < y$} (eraser.west);
+  \draw[->, thick] (adder.east) -- node [above, draw=none, fill=none] {$x + y$} (out);
+  \draw[->, thick] (eraser.east) -- node [below, draw=none, fill=none] {$0$} (out);
+\end{tikzpicture}
+\end{center}
+
+\subsection{The Compare TM}
+
+The Compare TM should achieve:
+\begin{itemize}
+  \item halt in final state $q_f$ if $x \geq y$;
+  \item halt in non-final state $q_n$ if $x < y$.
+\end{itemize}
+The required computations are
+\[
+q_0 w(x) 0 w(y) \vdash^* q_f w(x) 0 w(y) \text{ if } x \geq y, \qquad q_0 w(x) 0 w(y) \vdash^* q_n w(x) 0 w(y) \text{ if } x < y,
+\]
+where $w(\cdot)$ denotes the unary encoding. We achieve this by matching digits of $x$ with digits of $y$, replacing each matched pair with $X$. The tape ends in one of two states:
+\[
+XX\cdots1 1 0 X X \cdots X \Box \text{ if } x \geq y, \qquad XX \cdots X 0 X \cdots X 1 1 \Box \text{ if } x < y.
+\]
+In the first case the TM goes to state $q_f$ and the $X$s are replaced back by $1$s; in the second the TM goes to $q_n$.
+
+\subsection{The Erase TM}
+
+The Erase TM is straightforward: change each $1$ to a blank.
+
+\subsection{Putting the TMs together}
+
+The combined machine renames each sub-machine's states with a sub-machine label (e.g.\ $q_{C,0}, q_{A,0}$, $q_{E,0}$). The final state of one sub-machine is identified with the start state of the next, giving the linked computations
+\[
+q_{C, 0} w(x) 0 w(y) \vdash^* q_{A, 0} w(x) 0 w(y) \text{ if } x \geq y, \qquad q_{C, 0} w(x) 0 w(y) \vdash^* q_{E, 0} w(x) 0 w(y) \text{ if } x < y,
+\]
+\[
+q_{A, 0} w(x) 0 w(y) \vdash^* q_{A, f} w(x + y) 0, \qquad q_{E, 0} w(x) 0 w(y) \vdash^* q_{E, f} 0.
+\]
+
+\subsection{Combining TMs in JFLAP}
+
+JFLAP has the notion of \emph{Building Blocks}: any TM can be packaged as a building block and used as a subroutine within a larger computation. JFLAP supplies a few frequently-used blocks (``move left until $a$'', ``move right until not $a$'', and similar for $b$s and blanks); these are the same kind of macros we have been combining by hand.
+
+\section{Summary}
+
+\sns{multi-tape Turing machine}, \sns{multi-dimensional Turing machine}, and \sns{non-deterministic Turing machine} all turn out to be equivalent in computational power to the standard \sn{Turing machine}, so the choice of model is one of convenience rather than capability. A \sn{universal Turing machine} simulates an arbitrary TM described on its input, capturing the idea of a stored-program computer. Building larger TMs by combining smaller ones -- with a comparer, adder, and eraser, for example -- mirrors the way real programs are built from subroutines, and motivates JFLAP's building-blocks feature. The next note turns to the type-$0$ and type-$1$ levels of the Chomsky hierarchy.
+
+\end{smodule}
+
+\end{document}

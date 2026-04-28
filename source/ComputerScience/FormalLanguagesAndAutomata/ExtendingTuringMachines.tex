@@ -1,0 +1,118 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Extending Turing Machine Definitions}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Extending Turing Machine Definitions}]{ExtendingTuringMachines}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?IntroductionToFormalLanguagesAndAutomata}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?StandardTuringMachines}
+
+\symdecl*{Turing's thesis}
+\symdecl*{equivalent automata}
+\symdecl*{stay-option Turing machine}
+\symdecl*{multi-track Turing machine}
+\symdecl*{semi-infinite tape Turing machine}
+\symdecl*{off-line Turing machine}
+
+\section{Overview}
+
+The standard \sn{Turing machine} introduced in the previous note is a very low-level model. This note picks up the discussion in two ways: first by introducing high-level pseudocode descriptions of TMs that are easier to reason about than transition tables; and second by recording several minor variations on the standard model -- the \sn{stay-option Turing machine}, the \sn{multi-track Turing machine}, the \sn{semi-infinite tape Turing machine}, and the \sn{off-line Turing machine} -- and arguing that each variant is equivalent in expressive power to the standard model. This sets up \sn{Turing's thesis}: anything that can be carried out by mechanical means can be performed by some \sn{Turing machine}.
+
+\section{Algorithmic descriptions of Turing machines}
+
+A \sn{Turing machine} can be seen as a \emph{language recogniser/acceptor}, where we ask which input strings (on tape) cause the TM to halt in an accepting state, or as a \emph{transducer}, producing some output on the tape for a given input. In both cases the formal way of describing TM transitions -- a transition function $\delta$ over $Q \times \Gamma$ -- is very low-level and detailed, which means that TMs are hard to define and decipher in full. We therefore allow ourselves \emph{high-level pseudocode descriptions} of TMs.
+
+\begin{example}[Pseudocode versus diagram]
+The following TM fragment can be presented either as a transition diagram or as pseudocode. The two presentations describe exactly the same machine, but the pseudocode is much easier to follow:
+\begin{automaton}{2.4cm}
+  \state      (q0) {$q_0$} ;
+  \finalstate (qf) [below left of=q0]  {$q_f$} ;
+  \state      (q1) [below right of=q0] {$q_1$} ;
+  \path (q0) edge [loop above] node {$0; 0, R$} (q0)
+        (q0) edge              node [left] {$\Box; \Box, L$} (qf)
+        (q0) edge              node [right] {$1; 0, L$} (q1) ;
+\end{automaton}
+\begin{quote}\ttfamily
+Move right over 0s.\\
+If you read 1\\
+\quad Replace 1 by 0,\\
+\quad Move Left one place.\\
+If you read $\Box$\\
+\quad Move Left one place,\\
+\quad ACCEPT.
+\end{quote}
+\end{example}
+
+\begin{example}[Doubling a unary input]
+A TM that, given an input from $\{1\}^*$, doubles the number of symbols on the tape. Pseudocode: place a marker $\$$ at the head; for each unmarked $1$ to the right, mark it with $\overline{1}$ and append a $1$ at the right-hand blank; once all $1$s have been marked, replace the markers with $1$s and erase $\$$. The corresponding transition diagram has six states $q_0, q_1, q_2, q_3, q_f$ and a self-loop scanning over already-marked symbols.
+\end{example}
+
+\begin{example}[Recognising $\{a^{2n} b^n \mid n \geq 0\}$]
+The pseudocode reads: ``Sweep left-to-right; reject if the input contains $b$s before $a$s. Then loop: cross off two $a$s from the left and one $b$ from the right; halt accepting if both runs end together.'' This algorithm is much easier to grasp than the equivalent transition diagram with its dozen states.
+\end{example}
+
+\section{Turing's thesis}
+
+\begin{sdefinition}[for=Turing's thesis]
+\definame{Turing's thesis} (also known as the Church--Turing thesis) is the claim that any computation that can be carried out by mechanical means can be performed by some \sn{Turing machine}. It is not a theorem -- there is no precise definition of ``mechanical means'' to prove it from -- but is best regarded as a \emph{definition} of mechanical computation. Evidence in support of \sn{Turing's thesis} includes the facts that anything that can be done on an existing digital computer can also be done by a TM, that no problem solvable by an algorithm has yet been shown unsolvable by a TM, and that several alternative models of computation have been proposed but none has been shown to be more powerful than a TM.
+\end{sdefinition}
+
+\subsection{Equivalence of automata classes}
+
+\begin{sdefinition}[for=equivalent automata]
+Two \sns{automaton} are \emph{equivalent} if they accept the same language. Two \emph{classes} of automata $C_1$ and $C_2$ are \definame{equivalent automata} classes if every automaton in $C_1$ has an equivalent automaton in $C_2$ and vice versa; the relevant verb is ``$C_1$ is at least as powerful as $C_2$'' for the first half.
+\end{sdefinition}
+
+Equivalence of automata classes can be established either by a construction (for example NDFA $\to$ DFA) or by \emph{simulation}: $M_2$ simulates $M_1$ informally if any sequence of configurations of $M_2$ uniquely determines a sequence of configurations of $M_1$.
+
+\section{Minor variations on the standard Turing machine}
+
+We now record several minor variations of the standard \sn{Turing machine} model, each of which is equivalent in power to the standard model.
+
+\subsection{Turing machines with a stay option}
+
+\begin{sdefinition}[for=stay-option Turing machine]
+A \definame{stay-option Turing machine} extends the standard \sn{Turing machine} by allowing the head to \emph{stay} in place on each transition (in addition to moving Left or Right). Its \sn{transition function} has signature $\delta : Q \times \Gamma \to Q \times \Gamma \times \{L, R, S\}$.
+\end{sdefinition}
+
+The class of \sns{stay-option Turing machine} is equivalent to the class of standard \sns{Turing machine}: the easy direction is that a \sn{stay-option Turing machine} is an extension of the standard model. In the other direction, every Stay transition can be simulated by a standard TM by replacing each Stay transition with a pair: one transition that rewrites the symbol and moves R, then a second that leaves the tape unchanged and moves L; the necessary state change happens across the pair.
+
+\subsection{Multi-track tape}
+
+\begin{sdefinition}[for=multi-track Turing machine]
+A \definame{multi-track Turing machine} treats each tape cell as a tuple of $k$ \sns{tape alphabet} symbols, so that a single read--write head simultaneously reads and writes $k$ pieces of information. Formally, the \sn{tape alphabet} is replaced by $\Gamma^k$.
+\end{sdefinition}
+
+A \sn{multi-track Turing machine} is not a significant change to the original model, since we can just replace $\Gamma$ with $\Gamma^k$ and obtain a standard TM with composite tape symbols. There is still a single read--write head; all tracks are read at the same time.
+
+\subsection{Semi-infinite tape}
+
+\begin{sdefinition}[for=semi-infinite tape Turing machine]
+A \definame{semi-infinite tape Turing machine} is identical to the standard \sn{Turing machine} except that the tape is unbounded in only one direction; the head cannot move L when it is already at the tape boundary.
+\end{sdefinition}
+
+The class of \sns{semi-infinite tape Turing machine} is equivalent to the standard model. Any standard TM can be simulated by a \sn{semi-infinite tape Turing machine} that uses two \emph{tracks}: the upper track corresponds to the original cells to the right of some reference point, and the lower track corresponds to the cells to the left of the reference point in reverse order. The state space is partitioned into two parts -- one part indicates that the upper track should be worked on, the other the lower track -- and special markers at the tape boundary handle transitions between the two tracks.
+
+\subsection{The off-line Turing machine}
+
+\begin{sdefinition}[for=off-line Turing machine]
+An \definame{off-line Turing machine} extends the standard \sn{Turing machine} with an additional read-only input file. Transitions are governed by the current state, the symbol under the input head, and the symbol under the read--write head on the working tape.
+\end{sdefinition}
+
+The class of \sns{off-line Turing machine} is equivalent to the standard model. A standard TM can be simulated by an \sn{off-line Turing machine} which begins by copying the input file to the tape and then proceeds as the standard TM. In the other direction, an \sn{off-line Turing machine} can be simulated by a standard TM using a four-track tape: two tracks store the input file's contents and the position of the input head, and the other two store the working tape's contents and the position of the read--write head. A simulating move uses the state to remember the symbol read from the input track, then locates and updates the read--write head's position on the working tracks.
+
+\section{Summary}
+
+Pseudocode is a more usable way of describing TM algorithms than full transition diagrams. Several minor extensions to the standard \sn{Turing machine} -- the \sn{stay-option Turing machine}, the \sn{multi-track Turing machine}, the \sn{semi-infinite tape Turing machine}, and the \sn{off-line Turing machine} -- can each be simulated by, and themselves simulate, the standard model, so that the resulting equivalence classes are the same. \sn{Turing's thesis} captures the broader idea that anything computable by mechanical means can be expressed as a \sn{Turing machine}. The next note covers more substantial extensions: multi-tape, multi-dimensional, non-deterministic, and universal Turing machines.
+
+\end{smodule}
+
+\end{document}

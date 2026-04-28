@@ -1,0 +1,137 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Closure Properties of Regular Languages}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Closure Properties of Regular Languages}]{ClosurePropertiesOfRegularLanguages}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?IntroductionToFormalLanguagesAndAutomata}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?DeterministicAndNondeterministicFiniteAutomata}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?NDFAToDFAConversion}
+
+\symdecl*{closure properties for regular languages}
+\symdecl*{set closure}
+\symdecl*{closure under union}
+\symdecl*{closure under concatenation}
+\symdecl*{closure under Kleene star}
+\symdecl*{closure under intersection}
+\symdecl*{closure under complement}
+\symdecl*{closure under difference}
+
+\section{Overview}
+
+The previous notes formalised the \sn{deterministic finite-state automaton} and the \sn{nondeterministic finite-state automaton} and showed that they are equivalent, recognising exactly the \sns{regular language}. This note establishes the \sn{closure properties for regular languages}: starting from regular languages $L_1, L_2$, the languages $L_1 \cup L_2$, $L_1 L_2$, $L^*$, $L_1 \cap L_2$, $\overline{L}$, and $L_1 - L_2$ are all regular too. Each result is proved by an explicit FSA construction (or, for intersection and difference, by reducing to the already-proved cases).
+
+\section{Set closure}
+
+\begin{sdefinition}[for=set closure]
+A set $S$ exhibits \definame{set closure} under an operation $\circ$ if applying $\circ$ to any members of $S$ always produces a result that is also in $S$. For example, $\mathbb{Z}^+$ is closed under multiplication ($\mathbb{Z}^+ \cdot \mathbb{Z}^+ \subseteq \mathbb{Z}^+$) but not under division ($1/2 \notin \mathbb{Z}^+$).
+\end{sdefinition}
+
+\begin{sdefinition}[for=closure properties for regular languages]
+The \definame{closure properties for regular languages} record which language operations preserve regularity. The set of all \sns{regular language} is closed under union, concatenation, Kleene star, intersection, complement, and (set-theoretic) difference; this section gives an explicit FSA construction or reduction for each.
+\end{sdefinition}
+
+\section{Closure under union}
+
+\begin{sdefinition}[for=closure under union]
+The \definame{closure under union} property says that if $L_1$ and $L_2$ are \sns{regular language} then so is $L_1 \cup L_2$.
+\end{sdefinition}
+
+The construction uses two given FSAs $M_1, M_2$ accepting $L_1, L_2$ respectively, and builds an NDFA with $\lambda$-transitions for $L_1 \cup L_2$.
+
+\paragraph{The wrong idea: merging initial states.} A first attempt is to merge the initial states of $M_1$ and $M_2$. This generally gives the wrong language: the merged state combines self-loops of both machines, allowing strings that satisfy neither original DFA. For example, with $L_1 = \{a\}^* \{b\}$ accepted by a DFA with a self-loop on $a$ at the initial state, and $L_2 = \{a a, a b\}$ accepted by a DFA scanning two symbols, merging the initial states accepts $a^n$ for $n \geq 3$ -- a string in neither $L_1$ nor $L_2$.
+
+\paragraph{The fix.} Introduce a fresh initial state $i$ and add $\lambda$-transitions from $i$ to the original initial states of $M_1$ and $M_2$. The accepting states are the union of the accepting states of the two machines.
+
+\begin{example}[Union construction]
+With $L_1 = \{a^n \mid n \geq 2\}$ accepted by $q_0 \xrightarrow{a} q_1 \xrightarrow{a} q_2$ (with a self-loop $a$ at $q_2$), and $L_2 = \{a b^m a \mid m \geq 0\}$ accepted by $q_a \xrightarrow{a} q_b \xrightarrow{a} q_c$ (with self-loop $b$ at $q_b$), the union construction yields:
+\begin{automaton}{2.6cm}
+  \startstate (i)               {$i$} ;
+  \state      (q0) [above right of=i] {$q_0$} ;
+  \state      (q1) [right of=q0] {$q_1$} ;
+  \finalstate (q2) [right of=q1] {$q_2$} ;
+  \state      (qa) [below right of=i] {$q_a$} ;
+  \state      (qb) [right of=qa] {$q_b$} ;
+  \finalstate (qc) [right of=qb] {$q_c$} ;
+  \path (i)  edge              node {$\lambda$} (q0)
+        (i)  edge              node [below] {$\lambda$} (qa)
+        (q0) edge              node {$a$} (q1)
+        (q1) edge              node {$a$} (q2)
+        (q2) edge [loop above] node {$a$} (q2)
+        (qa) edge              node {$a$} (qb)
+        (qb) edge [loop above] node {$b$} (qb)
+        (qb) edge              node {$a$} (qc) ;
+\end{automaton}
+The result is an NDFA with $\lambda$-transitions accepting $L_1 \cup L_2$, which the subset construction can convert back to a DFA if a deterministic machine is required.
+\end{example}
+
+\section{Closure under concatenation}
+
+\begin{sdefinition}[for=closure under concatenation]
+The \definame{closure under concatenation} property says that if $L_1$ and $L_2$ are \sns{regular language} then so is $L_1 L_2 = \{ vw \mid v \in L_1,\ w \in L_2 \}$.
+\end{sdefinition}
+
+The construction takes DFAs $M_1, M_2$ for $L_1, L_2$ and connects each final state of $M_1$ to the initial state of $M_2$ by a $\lambda$-transition; the new final states are those of $M_2$. A run of the resulting machine first follows $M_1$ to one of its final states, takes a $\lambda$-transition into $M_2$'s initial state, and then follows $M_2$ to one of its final states. The accepted language is therefore exactly $L_1 L_2$.
+
+\paragraph{Iterated concatenation.} For any $n \geq 1$ and regular languages $L_1, \ldots, L_n$, $L_1 L_2 \cdots L_n$ is regular. The proof is by induction on $n$: the base case $n = 1$ holds by assumption, and the inductive step writes $L_1 \cdots L_n = (L_1 \cdots L_{n-1}) L_n$ and applies the binary case above.
+
+\section{Closure under Kleene star}
+
+\begin{sdefinition}[for=closure under Kleene star]
+The \definame{closure under Kleene star} property says that if $L$ is a \sn{regular language} then so is $L^* = \bigcup_{i=0}^\infty L^i = \{\lambda\} \cup L \cup L^2 \cup \cdots$.
+\end{sdefinition}
+
+We cannot simply chain infinitely many copies of an FSA for $L$. Instead, take an FSA $M$ for $L$, introduce a fresh state $i$ that is both the new initial state and a final state (so that $\lambda \in L^*$ is accepted), and add $\lambda$-transitions from $i$ to the original initial state and from each original final state back to $i$:
+\begin{automaton}{3.2cm}
+  \startfinalstate (i)              {$i$} ;
+  \state          (q0) [right of=i] {$q_0$} ;
+  \state          (qf) [right of=q0] {$q_f$} ;
+  \path (i)  edge              node {$\lambda$} (q0)
+        (q0) edge              node [below] {$M$} (qf)
+        (qf) edge [bend left=40] node [above] {$\lambda$} (i) ;
+\end{automaton}
+A run accepts $\lambda$ in zero passes through $M$, or $w_1 w_2 \cdots w_k$ with each $w_j \in L$ in $k$ passes by re-entering $M$ via the $\lambda$-transition back to $i$.
+
+\section{Closure under complement}
+
+\begin{sdefinition}[for=closure under complement]
+The \definame{closure under complement} property says that if $L$ is a \sn{regular language} over alphabet $\Sigma$ then so is $\overline{L} = \Sigma^* - L$.
+\end{sdefinition}
+
+Take a DFA $M$ for $L$ and form $\overline{M}$ by inverting the final and non-final states; then $L(\overline{M}) = \overline{L}$. The construction relies on $M$ being deterministic and total: every input string follows a unique computation, and the original final/non-final dichotomy partitions $\Sigma^*$. (For an NDFA, first convert to a DFA via the \sn{subset construction}.) Note that any \sns{junk state} in $M$ become final states of $\overline{M}$.
+
+\section{Closure under intersection}
+
+\begin{sdefinition}[for=closure under intersection]
+The \definame{closure under intersection} property says that if $L_1$ and $L_2$ are \sns{regular language} then so is $L_1 \cap L_2$.
+\end{sdefinition}
+
+There are two proofs. By De Morgan's law, $L_1 \cap L_2 = \overline{\overline{L_1} \cup \overline{L_2}}$, so closure under intersection follows from closure under union and complement. Alternatively, there is a direct \emph{product construction}: given DFAs $M_1 = \langle Q_1, \Sigma, \delta_1, i_1, F_1 \rangle$ and $M_2 = \langle Q_2, \Sigma, \delta_2, i_2, F_2 \rangle$, build the parallel-simulation DFA $M = \langle Q, \Sigma, \delta, i, F \rangle$ with
+\[
+Q = Q_1 \times Q_2,\quad i = (i_1, i_2),\quad F = F_1 \times F_2,\quad \delta((p, q), a) = (\delta_1(p, a), \delta_2(q, a)).
+\]
+Then $L(M) = L(M_1) \cap L(M_2)$.
+
+\section{Closure under difference}
+
+\begin{sdefinition}[for=closure under difference]
+The \definame{closure under difference} property says that if $L_1$ and $L_2$ are \sns{regular language} then so is $L_1 - L_2$.
+\end{sdefinition}
+
+By the set-theoretic identity $L_1 - L_2 = L_1 \cap \overline{L_2}$, closure under difference follows from closure under intersection and complement.
+
+\section{Summary}
+
+The class of \sns{regular language} is closed under union (with a fresh initial state and $\lambda$-transitions), concatenation (linking final states of $M_1$ to the initial state of $M_2$ by $\lambda$-transitions), Kleene star (a fresh initial-and-final state with $\lambda$-transitions to and from the original final states), intersection (product construction or De Morgan), complement (swap accepting and non-accepting states of a DFA), and difference (intersection with complement). All six \sn{closure properties for regular languages} reduce ultimately to FSA constructions, which is why regular languages are such a manageable class.
+
+\end{smodule}
+
+\end{document}

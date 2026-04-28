@@ -1,0 +1,177 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Deterministic and Nondeterministic Finite State Automata}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Deterministic and Nondeterministic Finite State Automata}]{DeterministicAndNondeterministicFiniteAutomata}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?IntroductionToFormalLanguagesAndAutomata}
+
+\symdecl*{deterministic finite-state automaton}
+\symdecl*{extended transition function}
+\symdecl*{nondeterministic finite-state automaton}
+\symdecl*{transition relation}
+\symdecl*{lambda-transition}
+\symdecl*{junk state}
+
+\section{Overview}
+
+The previous lecture introduced the \sn{finite-state automaton} as the simplest of our automaton models, with no auxiliary storage. This note formalises the FSA in two flavours: the \sn{deterministic finite-state automaton} (DFA), in which exactly one transition is defined at each (state, input) pair, and the \sn{nondeterministic finite-state automaton} (NDFA), in which a state may have several transitions on the same input symbol -- or none at all -- and may also use \sns{lambda-transition} that consume no input. Both flavours recognise exactly the same class of languages, the \sns{regular language}, but the nondeterministic model is often more compact and natural to write down.
+
+\section{Deterministic finite state automata}
+
+\begin{sdefinition}[for=deterministic finite-state automaton]
+A \definame{deterministic finite-state automaton} (DFA) is a 5-tuple $M = \langle Q, \Sigma, \delta, i, F \rangle$, where
+\begin{itemize}
+  \item $Q$ is a finite set of \emph{states};
+  \item $\Sigma$ is the \sn{alphabet}, a finite set of possible input symbols;
+  \item $\delta : Q \times \Sigma \to Q$ is the \emph{transition function} (a total function);
+  \item $i \in Q$ is the \emph{initial state};
+  \item $F \subseteq Q$ is the set of \emph{final} (accepting) states.
+\end{itemize}
+\end{sdefinition}
+
+\subsection{Extended transition function}
+
+To talk about acceptance of whole strings rather than single symbols, we extend $\delta$ from inputs in $\Sigma$ to inputs in $\Sigma^*$.
+
+\begin{sdefinition}[for=extended transition function]
+The \definame{extended transition function} $\overline{\delta} : Q \times \Sigma^* \to Q$ of a \sn{deterministic finite-state automaton} is recursively defined by
+\[
+\overline{\delta}(q, \lambda) = q, \qquad \overline{\delta}(q, aw) = \overline{\delta}(\delta(q, a), w)
+\]
+for $a \in \Sigma$ and $w \in \Sigma^*$. Some textbooks write $\widehat{\delta}$ or $\delta^*$ in place of $\overline{\delta}$.
+\end{sdefinition}
+
+\subsection{The language accepted by a DFA}
+
+A DFA $M = \langle Q, \Sigma, \delta, i, F \rangle$ \emph{accepts} a \sn{string} $w$ if $\overline{\delta}(i, w) \in F$. Note that the empty string $\lambda$ is accepted by $M$ if and only if $i \in F$. The \emph{language accepted by $M$} is the set of all strings that $M$ accepts:
+\[
+L(M) = \{ w \in \Sigma^* \mid \overline{\delta}(i, w) \in F \}.
+\]
+
+\begin{example}[A DFA for ``equal counts of $0$s and $1$s, both even'']
+We construct a DFA $M$ with $\Sigma = \{0, 1\}$ such that
+\[
+L(M) = \{ w \in \Sigma^* \mid \text{the numbers of $0$s and $1$s in $w$ are both even}\}.
+\]
+The idea is that $M$ tracks, with each symbol it reads, whether the numbers of $0$s and $1$s so far are even or odd. This suggests a four-state machine with $q_0$ (even $0$s, even $1$s), $q_1$ (odd $0$s, even $1$s), $q_2$ (even $0$s, odd $1$s), $q_3$ (odd $0$s, odd $1$s); $q_0$ is the initial and only accepting state. Each input symbol toggles the corresponding parity:
+
+\begin{automaton}{2.6cm}
+  \startfinalstate (q0)              {$q_0$} ;
+  \state          (q1) [right of=q0] {$q_1$} ;
+  \state          (q2) [below of=q0] {$q_2$} ;
+  \state          (q3) [right of=q2] {$q_3$} ;
+  \path (q0) edge [bend left]  node {$0$} (q1)
+        (q1) edge [bend left]  node {$0$} (q0)
+        (q0) edge [bend left]  node [left] {$1$} (q2)
+        (q2) edge [bend left]  node [right] {$1$} (q0)
+        (q1) edge [bend left]  node [left] {$1$} (q3)
+        (q3) edge [bend left]  node [right] {$1$} (q1)
+        (q2) edge [bend left]  node [below] {$0$} (q3)
+        (q3) edge [bend left]  node [above] {$0$} (q2) ;
+\end{automaton}
+\end{example}
+
+\subsection{Drawing conventions}
+
+Two graphical conventions reduce diagram clutter without changing the underlying machine.
+
+\paragraph{Junk states.} Each DFA state must have an outgoing transition for every symbol in $\Sigma$, because $\delta$ is a total function. This often forces a \emph{junk} (or sink) state with no path to a final state.
+
+\begin{sdefinition}[for=junk state]
+A \definame{junk state} (or \emph{sink state}) of a \sn{deterministic finite-state automaton} is a non-accepting state $q$ from which no final state is reachable, so that any computation entering $q$ cannot subsequently accept.
+\end{sdefinition}
+
+For simplicity, we agree that \sns{junk state} and their incoming transitions can be omitted in transition diagrams; the missing transitions are implicitly understood to lead to a junk state.
+
+\paragraph{Stacked transition labels.} If two or more transitions exist between the same pair of states, the labels can be stacked on a single arrow rather than drawn as parallel arrows.
+
+\section{Nondeterministic finite state automata}
+
+By definition, every state of a DFA has a unique successor for every input symbol. \sns{nondeterministic finite-state automaton} (NDFAs) relax this restriction in two ways:
+\begin{itemize}
+  \item a state may have \emph{several} outgoing transitions with the same label, and the machine \emph{chooses} which one to execute; and
+  \item a state may have \emph{no} outgoing transition for some input symbol -- if the machine reads that symbol, it simply stops, so NDFAs do not need junk states.
+\end{itemize}
+Formally, the deterministic transition function $\delta$ is replaced by a relation, the \sn{transition relation}.
+
+\subsection{Lambda transitions}
+
+NDFAs may additionally contain \sns{lambda-transition}, which consume no input symbol.
+
+\begin{sdefinition}[for=lambda-transition]
+A \definame{lambda-transition} (also called a $\lambda$-transition or $\varepsilon$-transition) of a \sn{nondeterministic finite-state automaton} is a transition that changes state without consuming an input symbol; in transition diagrams it is drawn with the label $\lambda$.
+\end{sdefinition}
+
+\subsection{Formal definition of an NDFA}
+
+\begin{sdefinition}[for=nondeterministic finite-state automaton]
+A \definame{nondeterministic finite-state automaton} (NDFA) is a 5-tuple $M = \langle Q, \Sigma, \rho, i, F \rangle$, where $Q$, $\Sigma$, $i$, $F$ are as for a \sn{deterministic finite-state automaton} and
+\[
+\rho \subseteq 2^{Q \times (\Sigma \cup \{\lambda\}) \times Q}
+\]
+is the \emph{transition relation}.
+\end{sdefinition}
+
+\begin{sdefinition}[for=transition relation]
+The \definame{transition relation} $\rho$ of an NDFA contains a triple $(p, a, q)$ exactly when, in state $p$ reading $a$ (or $a = \lambda$, taking a $\lambda$-transition), the machine may move to state $q$. Some textbooks instead use a set-valued transition function $\delta_{NDFA} : Q \times (\Sigma \cup \{\lambda\}) \to 2^Q$, which conveys the same information.
+\end{sdefinition}
+
+\subsection{Extended transition relation}
+
+Extending $\rho$ to strings is more involved than for DFAs because of the $\lambda$-transitions. We first define a relation $\rho^* \subseteq 2^{Q \times \Sigma \times Q}$ that captures ``state $q$ reachable from $p$ by reading $a$ amid (possibly empty) sequences of $\lambda$-transitions before and after the $a$-transition'':
+\begin{enumerate}
+  \item if $(p, a, q) \in \rho$ then $(p, a, q) \in \rho^*$;
+  \item if $(p, a, r) \in \rho^*$ and $(r, \lambda, q) \in \rho$ then $(p, a, q) \in \rho^*$;
+  \item if $(p, \lambda, r) \in \rho$ and $(r, a, q) \in \rho^*$ then $(p, a, q) \in \rho^*$.
+\end{enumerate}
+The \emph{extended transition relation} $\overline{\rho} \subseteq 2^{Q \times \Sigma^* \times Q}$ is then defined by
+\begin{enumerate}
+  \item $(q, \lambda, r) \in \overline{\rho}$ if $r$ is reachable from $q$ by a (possibly empty) sequence of $\lambda$-transitions;
+  \item $(q, aw, r) \in \overline{\rho}$ if there exists a state $p$ such that $(q, a, p) \in \rho^*$ and $(p, w, r) \in \overline{\rho}$.
+\end{enumerate}
+
+\subsection{The language accepted by an NDFA}
+
+An NDFA $M = \langle Q, \Sigma, \rho, i, F \rangle$ \emph{accepts} a string $w \in \Sigma^*$ if there exists a state $q \in F$ such that $(i, w, q) \in \overline{\rho}$. The empty string is accepted by $M$ iff some final state is reachable from $i$ by a (possibly empty) sequence of $\lambda$-transitions. The \emph{language accepted by $M$} is
+\[
+L(M) = \{ w \in \Sigma^* \mid (i, w, q) \in \overline{\rho} \text{ for some } q \in F \}.
+\]
+
+\begin{example}[A small NDFA over $\{a, b\}$]
+The following NDFA accepts the language $\{ a a^n a \mid n \geq 0 \} \cup \{ a a^n b a \mid n \geq 0 \} \cup \cdots$ -- informally, it reads an $a$, loops on $a$ or $b$ in $q_1$, and then reads a final $a$:
+\begin{automaton}{3.2cm}
+  \startstate (q0) {$q_0$} ;
+  \state      (q1) [right of=q0] {$q_1$} ;
+  \finalstate (q2) [right of=q1] {$q_2$} ;
+  \path (q0) edge              node {$a$} (q1)
+        (q1) edge [loop above] node [align=center] {$a$\\$b$} (q1)
+        (q1) edge              node {$a$} (q2) ;
+\end{automaton}
+The accepted language is $\{ a w a \mid w \in \{a, b\}^* \}$, expressed compactly thanks to nondeterminism: at $q_1$, the machine can either loop on the next symbol or commit to the final $a$ transition.
+\end{example}
+
+\subsection{Why allow nondeterminism?}
+
+Digital computers are deterministic, so why allow nondeterminism in our model? Three reasons:
+\begin{itemize}
+  \item Some languages can be specified more compactly using nondeterministic automata, as the example above shows.
+  \item When we apply algorithms to create or modify FSAs (for instance, the constructions for closure properties in a later note), the results are often nondeterministic.
+  \item Even though NDFAs look more powerful, the next note shows that they accept exactly the same class of languages as DFAs -- the \sns{regular language}.
+\end{itemize}
+
+\section{Summary}
+
+\sns{deterministic finite-state automaton} have a total transition function $\delta$ that is extended to strings by the \sn{extended transition function} $\overline{\delta}$, accepting a string when the run ends in a final state. \sns{nondeterministic finite-state automaton} replace $\delta$ with a \sn{transition relation} $\rho$ that admits multiple successors, missing transitions, and \sns{lambda-transition}, accepting a string when at least one branch of computation finishes in a final state. The next note shows that NDFAs and DFAs are equivalent: every NDFA can be turned into a DFA accepting the same language by the subset construction.
+
+\end{smodule}
+
+\end{document}

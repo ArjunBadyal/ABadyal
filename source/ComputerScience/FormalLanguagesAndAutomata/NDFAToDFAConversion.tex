@@ -1,0 +1,153 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{NDFA to DFA Conversion}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={NDFA to DFA Conversion}]{NDFAToDFAConversion}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?IntroductionToFormalLanguagesAndAutomata}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?DeterministicAndNondeterministicFiniteAutomata}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?ExtendingTuringMachines}
+
+\symdecl*{subset construction}
+\symdecl*{lambda-closure}
+
+\section{Overview}
+
+The previous note introduced the \sn{deterministic finite-state automaton} and the \sn{nondeterministic finite-state automaton}. We now show that DFAs and NDFAs are \sn{equivalent automata}: every NDFA $N$ has a DFA $D$ with $L(N) = L(D)$. The construction of $D$ from $N$ is the \sn{subset construction}, in which the states of the DFA are \emph{sets} of NDFA states. After working through two examples (an NDFA without and an NDFA with $\lambda$-transitions), we record the formal version of the construction and prove its correctness by induction on the input length.
+
+\section{Why NDFAs and DFAs accept the same languages}
+
+We want to show that DFAs and NDFAs accept the same class of languages -- the class of \sns{regular language}. There are two directions:
+\begin{enumerate}
+  \item If a language $L$ is accepted by a DFA, then there is an NDFA accepting $L$. This is easy: every DFA is, in particular, an NDFA whose transition relation is a (deterministic) function and which has no $\lambda$-transitions.
+  \item If a language $L$ is accepted by an NDFA, then there is a DFA accepting $L$. This is the substantive direction. The next sections describe a procedure -- the \sn{subset construction} -- that converts every NDFA into an equivalent DFA, and prove its correctness.
+\end{enumerate}
+
+\section{The subset construction informally}
+
+\begin{sdefinition}[for=subset construction]
+The \definame{subset construction} converts a \sn{nondeterministic finite-state automaton} $N$ into a \sn{deterministic finite-state automaton} $D$ whose states are \emph{sets} of $N$-states, by the following four-step procedure:
+\begin{enumerate}
+  \item Write out the individual $N$-transitions.
+  \item Iteratively, write out the transitions between sets of states, starting with the set containing $N$'s initial state and considering all symbols in $\Sigma$.
+  \item When no more $D$-transitions can be found, draw the resulting automaton.
+  \item The initial state of $D$ is the singleton set containing the initial state of $N$, and the final states of $D$ are those subsets containing a final state of $N$.
+\end{enumerate}
+\end{sdefinition}
+
+\subsection{Worked example: an NDFA without $\lambda$-transitions}
+
+Consider the NDFA $N$ over $\Sigma = \{a, b\}$ with states $\{q_0, q_1, q_2\}$, initial state $q_0$, final state $q_2$, and transitions
+\[
+q_0 \xrightarrow{a} q_1,\quad q_1 \xrightarrow{a} q_1,\quad q_1 \xrightarrow{a} q_2,\quad q_1 \xrightarrow{b} q_1.
+\]
+
+\textbf{Step 2: build set-of-state transitions.} Starting from $\{q_0\}$:
+\[
+\{q_0\} \xrightarrow{a} \{q_1\}, \quad \{q_1\} \xrightarrow{a} \{q_1, q_2\}, \quad \{q_1\} \xrightarrow{b} \{q_1\}, \quad \{q_1, q_2\} \xrightarrow{a} \{q_1, q_2\}, \quad \{q_1, q_2\} \xrightarrow{b} \{q_1\}.
+\]
+
+\textbf{Step 3 and 4.} The DFA $D$ has three states $\{q_0\}, \{q_1\}, \{q_1, q_2\}$, initial state $\{q_0\}$, and the only final state is $\{q_1, q_2\}$ (the subset containing the original final state $q_2$):
+\begin{automaton}{3.6cm}
+  \startstate (s0)              {$\{q_0\}$} ;
+  \state      (s1) [right of=s0] {$\{q_1\}$} ;
+  \finalstate (s12)[right of=s1] {$\{q_1, q_2\}$} ;
+  \path (s0)  edge              node {$a$} (s1)
+        (s1)  edge [loop above] node {$b$} (s1)
+        (s1)  edge [bend left]  node {$a$} (s12)
+        (s12) edge [loop above] node {$a$} (s12)
+        (s12) edge [bend left]  node {$b$} (s1) ;
+\end{automaton}
+
+\subsection{Worked example: an NDFA with $\lambda$-transitions}
+
+NDFAs with $\lambda$-transitions need extra care in step 1: when writing out the individual $N$-transitions for the symbol $a$, we must follow each $a$-transition by any $\lambda$-transitions that are immediately reachable, and -- in turn -- precede each $a$-transition by any $\lambda$-transitions that lead into its source state.
+
+\paragraph{Lambda closure.} The relevant bookkeeping device is the \emph{$\lambda$-closure} of a state.
+
+\begin{sdefinition}[for=lambda-closure]
+Given a state $q$ in an NDFA, the \definame{lambda-closure} of $q$, written $\Lambda(q)$, is the set of all states reachable from $q$ by a (possibly empty) sequence of $\lambda$-transitions. Recursively: $q \in \Lambda(q)$, and for all states $r, s \in Q$, if $r \in \Lambda(q)$ and $(r, \lambda, s) \in \rho$ then $s \in \Lambda(q)$.
+\end{sdefinition}
+
+For example, in the NDFA
+\begin{automaton}{3.6cm}
+  \startstate (q0)              {$q_0$} ;
+  \state      (q1) [right of=q0] {$q_1$} ;
+  \path (q0) edge [loop above] node {$a$} (q0)
+        (q1) edge [loop above] node {$b$} (q1)
+        (q0) edge              node {$\lambda$} (q1) ;
+\end{automaton}
+we have $\Lambda(q_0) = \{q_0, q_1\}$ and $\Lambda(q_1) = \{q_1\}$.
+
+The expanded individual transitions are
+\[
+q_0 \xrightarrow{a} q_0,\quad q_0 \xrightarrow{a} q_1,\quad q_0 \xrightarrow{b} q_1,\quad q_1 \xrightarrow{b} q_1
+\]
+(the second arises from $a$ at $q_0$ followed by the $\lambda$-transition; the third from the $\lambda$-transition followed by $b$ at $q_1$). The set-of-state transitions then yield
+\[
+\{q_0\} \xrightarrow{a} \{q_0, q_1\}, \quad \{q_0\} \xrightarrow{b} \{q_1\}, \quad \{q_1\} \xrightarrow{b} \{q_1\}, \quad \{q_0, q_1\} \xrightarrow{a} \{q_0, q_1\}, \quad \{q_0, q_1\} \xrightarrow{b} \{q_1\}.
+\]
+The DFA's initial state is $\Lambda(q_0) = \{q_0, q_1\}$ -- not just $\{q_0\}$ -- and any subset containing the original final state is final.
+
+\section{The subset construction formally}
+
+\begin{sparagraph}[title={Theorem (NDFA-to-DFA conversion)}]
+There is a procedure that converts every NDFA $M$ into a DFA $M'$ such that $L(M) = L(M')$.
+\end{sparagraph}
+
+\begin{sparagraph}[title={Construction}]
+Let $M = \langle Q, \Sigma, \rho, i, F \rangle$ be an NDFA. Construct a DFA $M' = \langle Q', \Sigma', \delta, i', F' \rangle$ as follows:
+\begin{itemize}
+  \item $Q' = 2^Q$ (the powerset of $Q$);
+  \item $\Sigma' = \Sigma$;
+  \item for $s' \in Q'$ and $a \in \Sigma$,
+  \[
+  \delta(s', a) = \bigcup_{s \in s'} \{ t \mid (s, a, t) \in \rho^* \},
+  \]
+  where $\rho^*$ is the relation defined in the previous note (an $a$-transition possibly preceded and/or followed by $\lambda$-transitions);
+  \item $i' = \Lambda(i)$;
+  \item $F' = \{ S \subseteq Q \mid S \cap F \neq \emptyset \}$.
+\end{itemize}
+Since $\delta$ is a function, $M'$ is deterministic.
+\end{sparagraph}
+
+\subsection{Correctness}
+
+To show $L(M) = L(M')$, we prove a stronger statement by induction on the input length: for every input string $w = a_1 a_2 \cdots a_n$, define
+\[
+Q_n = \{ s \mid (i, a_1 a_2 \cdots a_n, s) \in \overline{\rho} \}, \qquad q'_n = \overline{\delta}(\Lambda(i), a_1 a_2 \cdots a_n);
+\]
+then $q'_n = Q_n$ for all $n \geq 0$.
+
+\begin{sparagraph}[title={Proof: $q'_n \subseteq Q_n$}]
+\textbf{Base case ($n = 0$).} $q'_0 = \overline{\delta}(\Lambda(i), \lambda) = \Lambda(i) = Q_0$.
+
+\textbf{Inductive step.} Consider the path that the DFA $M'$ follows from $\Lambda(i)$ when reading $a_1 a_2 \cdots a_{n+1}$. Let $q'_n$ be the penultimate state on this path. By the induction hypothesis, $q'_n \subseteq Q_n$, so each state in $q'_n$ is reachable from $i$ in $M$ by reading $a_1 a_2 \cdots a_n$. Since $\delta(q'_n, a_{n+1}) = q'_{n+1}$, by the construction of $\delta$, $q'_{n+1}$ is the set of all states $t$ such that $(s, a_{n+1}, t) \in \rho^*$ for some $s \in q'_n$. Hence each $q \in q'_{n+1}$ also lies in $Q_{n+1}$, giving $q'_{n+1} \subseteq Q_{n+1}$.
+\end{sparagraph}
+
+\begin{sparagraph}[title={Proof: $Q_n \subseteq q'_n$}]
+\textbf{Base case ($n = 0$).} As above, $Q_0 = \Lambda(i) = q'_0$.
+
+\textbf{Inductive step.} Consider any path the NDFA $M$ might follow from $i$ when reading $a_1 a_2 \cdots a_{n+1}$. Let $q_n$ be the penultimate state on this path. By the induction hypothesis, $Q_n \subseteq q'_n$, so $q_n \in q'_n$. Since $(q_n, a_{n+1}, q_{n+1}) \in \rho^*$, the construction of $\delta$ gives
+\[
+Q_{n+1} \subseteq \delta(\overline{\delta}(\Lambda(i), a_1 \cdots a_n), a_{n+1}) = \overline{\delta}(\Lambda(i), a_1 \cdots a_{n+1}) = q'_{n+1}.
+\]
+\end{sparagraph}
+
+Together, $q'_n = Q_n$ for all $n$, so a string $w$ is accepted by $M$ iff $Q_{|w|} \cap F \neq \emptyset$ iff $q'_{|w|} \in F'$ iff $w$ is accepted by $M'$. Hence $L(M) = L(M')$.
+
+\section{Summary}
+
+The \sn{subset construction} converts every NDFA $N$ into a DFA $D$ whose states are subsets of $N$'s states, with the initial state $\Lambda(i)$ and final-state set being all subsets containing one of $N$'s final states. NDFAs with $\lambda$-transitions need step 1 to take the \sn{lambda-closure} into account. A two-direction induction proof on the length of the input confirms that $L(D) = L(N)$, so DFAs and NDFAs are \sn{equivalent automata} and accept the same class of languages, the \sns{regular language}. JFLAP includes a built-in implementation of this conversion.
+
+\end{smodule}
+
+\end{document}

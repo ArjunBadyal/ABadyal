@@ -1,0 +1,178 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Standard Turing Machines}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Standard Turing Machines}]{StandardTuringMachines}
+\usemodule{ComputerScience/FormalLanguagesAndAutomata?IntroductionToFormalLanguagesAndAutomata}
+
+\symdecl*{Turing machine}
+\symdecl*{tape alphabet}
+\symdecl*{transition function}
+\symdecl*{blank symbol}
+\symdecl*{halt state}
+
+\section{Overview}
+
+The \sn{finite-state automaton} has no auxiliary storage and the pushdown automaton has a stack with last-in-first-out access. The \sn{Turing machine} extends the abstract model of computation with the most general kind of storage we shall consider in this course: an unbounded read--write tape with a freely movable head. This note introduces standard \sns{Turing machine}, presents them both as language acceptors and as transducers, and traces a number of small examples.
+
+\subsection{Making the computation model more powerful}
+
+Recall the abstract model of computation introduced in the first lecture: a control unit reads input, communicates with some storage, and produces output. Two automaton models have been studied so far: the \sn{finite-state automaton} (no storage) and the nondeterministic pushdown automaton (a single stack). One could extend the storage to two stacks, a queue, and so on; the \sn{Turing machine} chooses the most flexible such extension, an unbounded read--write tape that the machine head can scan in either direction.
+
+\subsection{Turing machines, informally}
+
+A single-tape \sn{Turing machine} consists of:
+\begin{itemize}
+  \item an infinite tape, divided into cells, each of which contains a single symbol;
+  \item a read--write head that scans the tape one cell at a time, optionally updating the cell contents and then moving one cell to the left or right;
+  \item an input string initially stored on the tape and surrounded by blanks;
+  \item a finite control unit that, like an FSA, moves from state to state as the tape is processed.
+\end{itemize}
+
+A single TM transition is depicted by an arrow labelled ``$a; d, R$'', meaning: when in the source state and reading $a$ from the tape, write $d$, move the head one cell right, and enter the destination state. Pictorially:
+
+\begin{automaton}{3.0cm}
+  \state (q0) {$q_0$} ;
+  \state (q1) [right of=q0] {$q_1$} ;
+  \path (q0) edge node {$a; d, R$} (q1) ;
+\end{automaton}
+
+If the tape before the transition is $\ldots\ \Box\ \Box\ a\ b\ c\ \Box\ \Box\ \ldots$ with the head on $a$ and the machine in $q_0$, the tape after the transition is $\ldots\ \Box\ \Box\ d\ b\ c\ \Box\ \Box\ \ldots$ with the head on $b$ and the machine in $q_1$.
+
+\subsection{Turing machines, formally}
+
+\begin{sdefinition}[for=Turing machine]
+A \definame{Turing machine} is a tuple $M = \langle Q, \Sigma, \Gamma, \delta, q_0, \Box, F \rangle$, where
+\begin{itemize}
+  \item $Q$ is a finite set of states;
+  \item $\Sigma$ is the input alphabet;
+  \item $\Gamma$ is the \emph{tape alphabet};
+  \item $\delta : Q \times \Gamma \to Q \times \Gamma \times \{L, R\}$ is the \emph{transition function} (a partial function);
+  \item $q_0 \in Q$ is the initial state;
+  \item $\Box \in \Gamma$ is the \emph{blank symbol};
+  \item $F \subseteq Q$ is the set of final states,
+\end{itemize}
+with the requirement that $\Sigma \subseteq \Gamma \setminus \{\Box\}$.
+\end{sdefinition}
+
+\begin{sdefinition}[for=tape alphabet]
+The \definame{tape alphabet} of a \sn{Turing machine} is the set $\Gamma$ of symbols that may appear on the tape. It contains the input alphabet $\Sigma$ and at least the \sn{blank symbol} $\Box$, and may contain extra working symbols introduced by the machine.
+\end{sdefinition}
+
+\begin{sdefinition}[for=transition function]
+The \definame{transition function} of a \sn{Turing machine} is a partial function $\delta : Q \times \Gamma \to Q \times \Gamma \times \{L, R\}$. The intended reading of $\delta(q_i, a) = (q_j, b, D)$ is: when in state $q_i$ scanning the symbol $a$, write $b$ on the tape, move the head one cell in direction $D$, and enter state $q_j$.
+\end{sdefinition}
+
+\begin{sdefinition}[for=blank symbol]
+The \definame{blank symbol} $\Box$ is the distinguished member of the \sn{tape alphabet} that occupies every cell not initially used to hold an input symbol. It cannot appear in the input alphabet $\Sigma$.
+\end{sdefinition}
+
+\paragraph{TM processing.} A \sn{Turing machine} starts in its initial state $q_0$ with some information on the tape. The next steps -- moving from state to state and reading or writing the tape -- are controlled by $\delta$. Eventually the machine may terminate by reaching a configuration on which $\delta$ is undefined; this is known as being in a \sn{halt state}. We assume that no transitions are defined from any final state, so a TM always halts when it enters a final state, although it may halt in non-final states too.
+
+\begin{sdefinition}[for=halt state]
+A configuration of a \sn{Turing machine} is in a \definame{halt state} when its \sn{transition function} $\delta$ is undefined on the current state and tape symbol. Standard TMs have no transitions out of final states, so reaching a final state is one way of halting; halting in a non-final state corresponds to rejection.
+\end{sdefinition}
+
+\paragraph{Some features.} The standard \sn{Turing machine} as defined above has three salient features that we shall return to throughout the course:
+\begin{itemize}
+  \item the tape is unbounded at both ends, so the head may move left or right as often as needed;
+  \item the machine is deterministic: $\delta$ defines at most one move for each (state, tape symbol) pair;
+  \item there is no special input file and no special output device. Initially the tape will hold the input (some of which is the actual input and the rest is blank); on halting, some or all of the tape contents may be regarded as the output.
+\end{itemize}
+
+\subsection{Tracing a Turing machine}
+
+\begin{example}[A small TM]
+Let $Q = \{q_0, q_1\}$, $\Sigma = \{a, b\}$, $\Gamma = \{a, b, \Box\}$, $F = \{q_1\}$, and initial state $q_0$. The \sn{transition function} is
+\[
+\delta(q_0, a) = (q_0, b, R),\quad \delta(q_0, b) = (q_0, b, R),\quad \delta(q_0, \Box) = (q_1, \Box, L).
+\]
+The machine starts in $q_0$, scans the input rewriting every $a$ as $b$ while moving right, and on the first blank moves left into the final state $q_1$ and halts.
+\begin{automaton}{3.4cm}
+  \startstate (q0) {$q_0$} ;
+  \finalstate (q1) [right of=q0] {$q_1$} ;
+  \path (q0) edge [loop above] node [align=center] {$a; b, R$\\$b; b, R$} (q0)
+        (q0) edge node {$\Box; \Box, L$} (q1) ;
+\end{automaton}
+\end{example}
+
+\paragraph{Configurations.} As for NPDAs, we keep track of where a TM has got to in its computation by listing its \emph{configuration}: a tape contents string with the head position and the current state interleaved. Writing $x_1 q x_2$ for a tape containing the strings $x_1$ then $x_2$, with the read-write head over the first symbol of $x_2$ and the machine in state $q$, the move relation $\vdash$ on configurations follows directly from $\delta$. Likewise $a_1 \cdots a_{k-1} q a_k \cdots a_n$ has the head on $a_k$.
+
+\begin{example}[A non-halting TM]
+Some \sns{Turing machine} fail to halt. The two-state machine
+\begin{automaton}{3.4cm}
+  \startstate (q0) {$q_0$} ;
+  \state (q1) [right of=q0] {$q_1$} ;
+  \path (q0) edge [bend left]  node [align=center] {$a; a, R$\\$b; b, R$\\$\Box; \Box, R$} (q1)
+        (q1) edge [bend left]  node [align=center] {$a; a, L$\\$b; b, L$\\$\Box; \Box, L$} (q0) ;
+\end{automaton}
+runs forever, alternating between $q_0$ and $q_1$ but never altering the tape. Non-halting computations matter because, on inputs they fail to halt on, the machine neither accepts nor rejects in finite time.
+\end{example}
+
+\section{Turing machines as language acceptors}
+
+We can view \sns{Turing machine} as language acceptors. A string $w$ is \emph{accepted} if it causes the TM to halt in a final state when started from the standard initial configuration (state $q_0$, head on the leftmost input symbol). A string is \emph{rejected} when the TM halts in a non-final state, or never halts.
+
+In symbols, the language accepted by $M$ is
+\[
+L(M) = \{w \in \Sigma^+ \mid q_0 w \vdash^* x_1 q_f x_2 \text{ for some } q_f \in F \text{ and } x_1, x_2 \in \Gamma^*\}.
+\]
+
+\begin{example}[Accepting $00^*$]
+For $\Sigma = \{0,1\}$, the following two-state machine accepts the language denoted by the regular expression $00^*$ -- all non-empty strings of $0$s. The machine starts at the leftmost input symbol, reading each symbol to check that it is a $0$; if it reaches a blank before it meets a $1$, it accepts; if the input contains a $1$ anywhere, the machine rejects (it gets stuck on the $1$).
+\begin{automaton}{3.6cm}
+  \startstate (q0) {$q_0$} ;
+  \finalstate (q1) [right of=q0] {$q_1$} ;
+  \path (q0) edge [loop above] node {$0; 0, R$} (q0)
+        (q0) edge node {$\Box; \Box, R$} (q1) ;
+\end{automaton}
+Note that the empty string $\lambda$ is not accepted, because $q_0$ has no transition defined for the case where the very first symbol is a blank with no input symbol present.
+\end{example}
+
+\section{Turing machines as transducers}
+
+A \sn{Turing machine} can also be viewed as an abstract model for a digital computer: it turns input into output. As a transducer, a TM implements a function that treats the original contents of the tape as its input, and the final contents of the tape as its output. Formally, $M$ implements a function $\widehat{w} = f(w)$ provided
+\[
+q_0 w \vdash^* q_f \widehat{w}
+\]
+for some final state $q_f \in F$. Notice the requirement on the final tape head position: it must be over the start of the output.
+
+\begin{example}[Computing $x + y$ in unary]
+We design a \sn{Turing machine} that computes $x + y$, given two positive integers $x$ and $y$. We represent $x$ and $y$ in unary notation on the tape, separated by a $0$. The following five-state machine performs the addition:
+\begin{automaton}{2.6cm}
+  \startstate (q0)              {$q_0$} ;
+  \state      (q1) [right of=q0] {$q_1$} ;
+  \state      (q2) [right of=q1] {$q_2$} ;
+  \state      (q3) [right of=q2] {$q_3$} ;
+  \finalstate (q4) [right of=q3] {$q_4$} ;
+  \path (q0) edge [loop above] node {$1; 1, R$} (q0)
+        (q0) edge              node {$0; 1, R$} (q1)
+        (q1) edge [loop above] node {$1; 1, R$} (q1)
+        (q1) edge              node {$\Box; \Box, L$} (q2)
+        (q2) edge              node {$1; 0, L$} (q3)
+        (q3) edge [loop above] node {$1; 1, L$} (q3)
+        (q3) edge              node {$\Box; \Box, R$} (q4) ;
+\end{automaton}
+On input $11011\Box$ ($x = 2$, $y = 3$), the machine successively rewrites the separator and erases one of the input $1$s so that the tape ends as $\Box 11111 \Box$ with the head over the leftmost $1$, encoding $x + y = 5$.
+\end{example}
+
+\section{Turing machines in JFLAP}
+
+\sns{Turing machine} can be edited and run in JFLAP, both as acceptors and as transducers. JFLAP's standard TM model can be tweaked through the \emph{Preferences} settings (whether stay-put moves are allowed, whether acceptance is by final state or by halting, whether transitions are allowed from a final state); the Theory 2 JFLAP practical sheets make use of these settings.
+
+\section{Summary}
+
+A \sn{Turing machine} is a tuple $M = \langle Q, \Sigma, \Gamma, \delta, q_0, \Box, F \rangle$ whose \sn{transition function} $\delta : Q \times \Gamma \to Q \times \Gamma \times \{L, R\}$ governs how the read--write head reads, writes, and moves over an unbounded tape. As an acceptor, a TM defines the language $L(M)$ of those strings whose computation reaches a final state. As a transducer, a TM computes a function whose value is encoded in the final tape contents. Subsequent lectures generalise the model to multi-tape, non-deterministic, and universal variants, and connect TMs to the type-$0$ and type-$1$ languages of the Chomsky hierarchy.
+
+\end{smodule}
+
+\end{document}

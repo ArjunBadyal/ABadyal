@@ -1,0 +1,248 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Introduction to Formal Languages and Automata}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Introduction to Formal Languages and Automata}]{IntroductionToFormalLanguagesAndAutomata}
+\usemodule{ComputerScience/LexingParsingCompilingInterpreting/CompilationPhases/CompilationPhases_defs?Compilation}
+
+\symdecl*{alphabet}
+\symdecl*{string}
+\symdecl*{formal language}
+\symdecl*{automaton}
+\symdecl*{finite-state automaton}
+\symdecl*{regular language}
+
+\section{Overview}
+
+This note introduces the basic objects of the theory of formal languages and automata: \sn{alphabet}, \sn{string}, \sn{formal language}, \sr{Compilation?ContextFreeGrammar}{grammar}, and \sn{automaton}.
+
+\subsection{Fundamentals}
+
+There are three central concepts.
+A \sn{formal language} is a (finite or infinite) set of \sns{string} that count as members of the language.
+A \sr{Compilation?ContextFreeGrammar}{grammar} is a finite system of rules that \emph{generates} a language by repeatedly rewriting symbols starting from a designated start symbol.
+An \sn{automaton} is an abstract computational machine that \emph{recognises} a language by reading input symbols and changing state. (Plural: automata.)
+
+\begin{sdefinition}[for=alphabet]
+    An \definame{alphabet} is a finite, non-empty set of symbols, conventionally written $\Sigma$.
+\end{sdefinition}
+
+\begin{sdefinition}[for=string]
+    A \definame{string} over an \sn{alphabet} $\Sigma$ is a finite sequence of symbols from $\Sigma$. The empty string is denoted by $\lambda$ (some textbooks use $\Lambda$ or $\varepsilon$).
+\end{sdefinition}
+
+For a non-negative integer $k$, write $\Sigma^k$ for the set of all \sns{string} of length $k$, with $\Sigma^0 = \{\lambda\}$. Then
+\[
+\Sigma^* = \Sigma^0 \cup \Sigma^1 \cup \Sigma^2 \cup \cdots
+\]
+is the set of all \sns{string} over $\Sigma$, and $\Sigma^+ = \Sigma^* \setminus \Sigma^0$ is the set of non-empty strings over $\Sigma$.
+
+\paragraph{Notation and terminology for strings.}
+For symbols $a, b, a_i, b_i \in \Sigma$ (with $i \geq 1$) and a string $w \in \Sigma^*$:
+\begin{itemize}
+    \item $a^n$ denotes $a a \cdots a$ ($n$ factors), with $a^0 = \lambda$.
+    \item $|w|$ denotes the length of $w$, with $|\lambda| = 0$.
+    \item If $w = a_1 a_2 \cdots a_n$ and $1 \leq k \leq n$, then $a_1 a_2 \cdots a_k$ is a \emph{prefix} of $w$.
+    \item Analogously, $a_k a_{k+1} \cdots a_n$ is a \emph{suffix} of $w$.
+    \item If $v = a_1 a_2 \cdots a_m$ and $w = b_1 b_2 \cdots b_n$, the \emph{concatenation} of $v$ and $w$ is $a_1 a_2 \cdots a_m b_1 b_2 \cdots b_n$, written $vw$.
+    \item Special case: $w \lambda = w = \lambda w$.
+    \item $w^n$ denotes $w w \cdots w$ ($n$ factors), with $w^0 = \lambda$.
+\end{itemize}
+
+\begin{sdefinition}[for=automaton]
+    An \definame{automaton} is an abstract computational machine that reads input strings, changes state according to transition rules, and (depending on the machine model) may also use auxiliary storage to recognise a \sn{formal language}.
+\end{sdefinition}
+
+\subsection{Languages}
+
+\begin{sdefinition}[for=formal language]
+    Given an \sn{alphabet} $\Sigma$, a \definame{formal language} (or \emph{language} for short) is simply a subset of $\Sigma^*$, where $\Sigma^*$ denotes the set of all finite \sns{string} over $\Sigma$ (including the empty string $\lambda$). The Kleene-star superscript thus turns an alphabet into the (countably infinite) collection of every string that can be built from its symbols, and a language is any chosen subset of that collection.
+\end{sdefinition}
+
+\begin{example}[Finite languages over $\Sigma = \{0,1\}$]
+The set $L = \{\lambda,\ 0,\ 00,\ 001\}$ is a \sn{formal language}. So is $L = \{w \in \Sigma^* \mid |w| \leq 64\}$, which contains all binary strings of length at most $64$.
+\end{example}
+
+\begin{example}[Infinite languages over $\Sigma = \{0,1\}$]
+The set $L = \{w \in \Sigma^* \mid |w| = 2^n,\ n \geq 0\}$ contains exactly the binary strings whose length is a power of two. The set $\{w \in \Sigma^* \mid w$ is a prime number in binary representation$\}$ collects the binary representations of all prime numbers.
+\end{example}
+
+\paragraph{Operations on languages.}
+Because a \sn{formal language} is a set of \sns{string}, the standard set operations of \emph{union}, \emph{intersection}, and \emph{difference} apply directly. The \emph{concatenation} of two languages $L_1$ and $L_2$ is
+\[
+L_1 L_2 = \{ vw \mid v \in L_1 \text{ and } w \in L_2 \}.
+\]
+For example, $\{a, bc\} \{c, de\} = \{ac,\ ade,\ bcc,\ bcde\}$, and $\{a^n \mid n \text{ is odd}\} \cdot \{a^n \mid n \text{ is even}\} = \{a^n \mid n \text{ is odd}\}$. Iterated concatenation is written $L^k$ for $L L \cdots L$ ($k$ factors), with $L^0 = \{\lambda\}$. Given a language $L$ over $\Sigma$, its \emph{complement} is $\overline{L} = \Sigma^* \setminus L$, the set of all strings in $\Sigma^*$ that are not in $L$.
+
+\paragraph{Notational conventions.}
+Throughout the course we use $\Sigma$ for an \sn{alphabet}; letters $a, b, c, \ldots$ and digits $0, 1, 2, \ldots$ for individual symbols (members of $\Sigma$); letters $u, v, w, x, y, z$ for \sns{string} (members of $\Sigma^*$); and the letter $L$ for \sns{formal language} (subsets of $\Sigma^*$).
+
+\subsection{Automata as Models of Computation}
+
+An \sn{automaton} can be drawn as a black box with three parts: a control unit with finitely many internal states, an input that is consumed left-to-right, and (depending on the model) some auxiliary storage:
+\begin{center}
+\begin{tikzpicture}[every node/.style={draw, thick, minimum height=1.1cm, minimum width=2.6cm, rounded corners=1pt, font=\small}, node distance=2.4cm]
+  \node (control) {Control};
+  \node (input) [left=of control, draw=none, minimum width=0pt] {Input};
+  \node (output) [right=of control, draw=none, minimum width=0pt] {Output};
+  \node (storage) [below=of control] {Storage};
+  \draw[->, thick] (input) -- (control);
+  \draw[->, thick] (control) -- (output);
+  \draw[<->, thick] (control) -- (storage);
+\end{tikzpicture}
+\end{center}
+The input is a \sn{string}, the control unit has finitely many states and transitions between them, the storage capacity may be unbounded depending on the machine type, and the output is either ``accept''/``reject'' or, for transducers, another string.
+
+\subsection{Types of Automata}
+
+Three machine models are organised by how much auxiliary storage they have. Each strictly contains the previous one in expressive power.
+
+\begin{sdefinition}[for=finite-state automaton]
+    A \definame{finite-state automaton} (FSA) is an \sn{automaton} with no auxiliary storage; its control state is its entire memory.
+\end{sdefinition}
+
+\begin{itemize}
+  \item A \sn{finite-state automaton} has no auxiliary storage; the control state is its entire memory.
+  \item A \emph{pushdown automaton} has an unbounded stack with last-in-first-out access.
+  \item A \emph{Turing machine} has an unbounded read--write tape with a freely movable head.
+\end{itemize}
+Finite automata are strictly less powerful than pushdown automata, which in turn are strictly less powerful than Turing machines.
+
+\subsection{Why Study Finite Automata}
+
+Finite automata are simple enough to be amenable to mathematical analysis, so we can prove properties of them and characterise the class of languages they recognise. There are constructive algorithms for the language-theoretic operations of complement, union, and intersection. They also model many practical systems:
+\begin{itemize}
+  \item Designing and verifying logical circuits.
+  \item The lexical analyser of a compiler, which breaks input text into identifiers, keywords, numeric literals, and so on.
+  \item Pattern matching against large bodies of text, such as searching web pages for occurrences of a word or phrase.
+  \item Verifying finite-state models, for example communication and security protocols.
+\end{itemize}
+
+\subsection{Transition Diagrams and Lexical Analysis}
+
+A \emph{transition diagram} (or \emph{transition graph}) draws an \sn{automaton} as a labelled directed graph. States are circles, the initial state has an unattached incoming arrow, accepting (final) states are drawn as double circles, and labelled arrows give the transitions.
+
+\begin{example}[Recognising variable names]
+A typical lexical-analysis task is recognising variable names. Suppose every variable name begins with a letter, followed by any number of letters or digits. The following three-state FSA accepts exactly the strings of that shape, with state $3$ accepting:
+\begin{automaton}{2.6cm}
+  \startstate (q1) {$1$} ;
+  \finalstate (q3) [above right of=q1] {$3$} ;
+  \state      (q2) [below right of=q1] {$2$} ;
+  \path (q1) edge              node {letter} (q3)
+        (q1) edge              node [below] {digit} (q2)
+        (q3) edge [loop right] node [align=center] {letter\\digit} (q3) ;
+\end{automaton}
+A run starting at state $1$ rejects any string that begins with a digit (state $2$ is a non-accepting trap), and accepts any string that begins with a letter and contains only letters and digits afterwards.
+
+The transition function can equivalently be presented as a table, where rows are states and columns are input symbols. Reading from the table, the lexical analyser can be implemented as a small loop:
+\[
+\begin{array}{l|lll}
+ & \text{letter} & \text{digit} & \text{end-of-string}\\
+\hline
+1 & 3 & 2 & \text{error}\\
+2 & \text{error} & \text{error} & \text{error}\\
+3 & 3 & 3 & \text{accept}
+\end{array}
+\]
+\begin{quote}\ttfamily
+State := 1\\
+Repeat\\
+\quad Read next symbol into Current;\\
+\quad If Current not in \{letter, digit, end-of-string\} then exit to error routine;\\
+\quad State := Table[State, Current];\\
+\quad If State = error then exit to error routine\\
+Until State = accept
+\end{quote}
+\end{example}
+
+\begin{example}[Recognising real numbers]
+A more elaborate FSA recognises decimal real numbers in scientific notation. States $4$ and $7$ are accepting; the alphabet contains digits, the dot ``.'', the exponent marker ``E'', and the optional signs ``$+$'', ``$-$''.
+\begin{automaton}{2.8cm}
+  \startstate (s1) {$1$} ;
+  \state      (s2) [right of=s1] {$2$} ;
+  \state      (s5) [right of=s2] {$5$} ;
+  \finalstate (s7) [right of=s5] {$7$} ;
+  \state      (s3) [below of=s2] {$3$} ;
+  \finalstate (s4) [right of=s3] {$4$} ;
+  \state      (s6) [below of=s7] {$6$} ;
+  \path (s1) edge              node {digit} (s2)
+        (s2) edge [loop above] node {digit} (s2)
+        (s2) edge              node [right] {.} (s3)
+        (s2) edge              node {E} (s5)
+        (s3) edge              node [below] {digit} (s4)
+        (s4) edge [loop below] node {digit} (s4)
+        (s4) edge [bend right] node [right] {E} (s5)
+        (s5) edge              node {digit} (s7)
+        (s5) edge              node [right] {$+$ $-$} (s6)
+        (s6) edge              node [right] {digit} (s7)
+        (s7) edge [loop above] node {digit} (s7) ;
+\end{automaton}
+A typical accepting run, e.g. on the string $\mathtt{11.4E+5}$, follows the path $1 \to 2 \to 2 \to 5 \to 6 \to 7$, ending in the accepting state $7$.
+\end{example}
+
+\subsection{Languages Accepted by Finite Automata}
+
+Given an FSA and a \sn{string} $w \in \Sigma^*$, $w$ is \emph{accepted} if running the FSA on $w$ from the initial state finishes in an accepting state. The set of all strings accepted by the FSA is the \emph{language of the FSA}.
+
+\begin{example}[Strings of accepted vs.\ rejected length]
+Consider the following three-state FSA over $\Sigma = \{0,1\}$:
+\begin{automaton}{2.6cm}
+  \startstate (q0)              {$q_0$} ;
+  \finalstate (q1) [right of=q0] {$q_1$} ;
+  \state      (q2) [right of=q1] {$q_2$} ;
+  \path (q0) edge [loop above] node {$0$} (q0)
+        (q0) edge [bend left]  node {$1$} (q1)
+        (q1) edge [bend left]  node {$0$} (q0)
+        (q1) edge [bend left]  node {$1$} (q2)
+        (q2) edge [loop above] node {$0$} (q2)
+        (q2) edge [bend left]  node {$1$} (q1) ;
+\end{automaton}
+Of the strings $0001$, $010011$, $0000110$, the first and second are accepted (they end in $q_1$) and the third is rejected (it ends in $q_2$). The language accepted is exactly the set of binary strings whose number of $1$s, modulo $2$, is $1$.
+\end{example}
+
+\begin{sdefinition}[for=regular language]
+    A \definame{regular language} is a \sn{formal language} that is recognised by some \sn{finite-state automaton}; equivalently (as we shall see in later lectures), it is a language that can be generated by a regular grammar or denoted by a regular expression.
+\end{sdefinition}
+
+The languages accepted by \sns{finite-state automaton} are exactly the \sns{regular language}; this name will be motivated and used throughout the course.
+
+\subsection{Proof by Induction on FSA Properties}
+
+Mathematical analysis of an FSA often uses induction on the length of the input or on the number of transitions. The following small example illustrates the technique end-to-end.
+
+\begin{example}[Off-on switch]
+Consider the two-state FSA modelling a button-controlled switch, where pushing the button toggles the state:
+\begin{automaton}{3.5cm}
+  \startstate (off)               {Off} ;
+  \state      (on)  [right of=off] {On} ;
+  \path (off) edge [bend left]  node {push} (on)
+        (on)  edge [bend left]  node {push} (off) ;
+\end{automaton}
+Let $\textsc{Off}(n)$ be the property ``the FSA is in state Off after $n$ pushes if and only if $n$ is even''; let $\textsc{On}(n)$ be the analogous property for state On. We prove $\textsc{Off}(n)$ for all $n \geq 0$ by induction on $n$; the proof of $\textsc{On}(n)$ is virtually identical.
+
+\textbf{Base case ($n=0$).} After zero pushes the FSA is in its initial state Off, and $0$ is even, so the ``iff'' holds.
+
+\textbf{Inductive step.} Assume $\textsc{Off}(n)$ holds; we show $\textsc{Off}(n+1)$.
+\begin{itemize}
+  \item If $n$ is even, the induction hypothesis says the FSA is in Off after $n$ pushes. Pushing once more transitions to On, and $n+1$ is odd, so the ``iff'' for $n+1$ holds.
+  \item If $n$ is odd, the induction hypothesis says the FSA is \emph{not} in Off after $n$ pushes; since the FSA has only two states it must be in On. Pushing once more transitions back to Off, and $n+1$ is even, so the ``iff'' for $n+1$ holds.
+\end{itemize}
+This completes the induction.
+\end{example}
+
+\subsection{Summary}
+
+\sns{formal language} are sets of \sns{string} over some \sn{alphabet}. \sns{automaton} are abstract models of computing machines that recognise languages, and the \sn{finite-state automaton} -- with no storage capacity -- is the simplest such model on the menu. The languages accepted by FSAs are the \sns{regular language}; later notes treat them more formally and pair the FSA model with grammars and regular expressions.
+
+\end{smodule}
+
+\end{document}
