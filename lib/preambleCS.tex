@@ -1,3 +1,42 @@
 % Lightweight preamble for ComputerScience definition files and notes.
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,positioning}
+
+\newenvironment{automaton}[1]{%
+  \newcommand{\state}{\node[state]}%
+  \newcommand{\startstate}{\node[initial,state,initial text={}]}%
+  \newcommand{\finalstate}{\node[state,accepting]}%
+  \newcommand{\startfinalstate}{\node[initial,state,accepting,initial text={}]}%
+  \begin{center}\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=#1,semithick]%
+}{%
+  \end{tikzpicture}\end{center}%
+}
+
+% Example boxes, mirroring the thesis aesthetic.
+\newcounter{examplecounter}
+\setcounter{examplecounter}{0}
+\tcbset{
+  examplebox/.style={
+    enhanced, breakable,
+    colback=gray!5,
+    colframe=black,
+    colbacktitle=gray!5,
+    coltitle=black,
+    arc=2pt,
+    boxrule=0.5pt,
+    left=4pt,right=4pt,top=4pt,bottom=4pt,
+    fonttitle=\bfseries,
+    before skip=0.25em,
+    after skip=0.25em,
+    pad after break=0pt
+  }
+}
+\newenvironment{example}[1][]{%
+  \refstepcounter{examplecounter}%
+  \begin{tcolorbox}[examplebox,title={Example~\arabic{examplecounter}:~#1}]%
+}{%
+  \end{tcolorbox}%
+}

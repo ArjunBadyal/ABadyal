@@ -1,0 +1,31 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Kinematics Definitions}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Kinematics}]{Kinematics}
+\usemodule{Mathematics/Algebra/Algebra_defs?Algebra}
+
+    \section{Core Concepts}
+
+    \symdecl*{Jacobian}
+    \begin{sdefinition}[for=Jacobian]
+        The \definame{Jacobian} of a kinematic chain is the matrix that maps joint velocities $\dot q$ to end-effector velocities $v$ at a given configuration.
+    \end{sdefinition}
+
+    \symdecl*{singularity}
+    \begin{sdefinition}[for=singularity]
+        A \definame{singularity} of a kinematic chain is a configuration at which the \sn{Jacobian} fails to have maximal rank.
+    \end{sdefinition}
+
+\end{smodule}
+
+\end{document}

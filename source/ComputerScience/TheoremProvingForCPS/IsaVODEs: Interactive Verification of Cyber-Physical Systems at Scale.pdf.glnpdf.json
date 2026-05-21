@@ -1,0 +1,160 @@
+{
+  "schema": "gln.pdf-annotations.v1",
+  "pdfPath": "source/ComputerScience/TheoremProvingForCPS/IsaVODEs: Interactive Verification of Cyber-Physical Systems at Scale.pdf",
+  "annotations": [
+    {
+      "id": "pdfann-b5c0891a-a480-454b-8ab2-c2889370179e",
+      "kind": "sref",
+      "type": "system",
+      "slug": "cyber-physical-systems",
+      "label": "cyber-physical systems",
+      "page": 1,
+      "text": "Cyber-Physical Systems",
+      "notes": "Application domain of the verification framework.",
+      "createdAt": "2026-05-06T21:36:55.386759799Z"
+    },
+    {
+      "id": "pdfann-4f3da592-b310-4aeb-9c05-ce879191f95d",
+      "kind": "sref",
+      "type": "method",
+      "slug": "verification",
+      "label": "verification",
+      "page": 1,
+      "text": "Verification",
+      "notes": "Central activity addressed by the paper.",
+      "createdAt": "2026-05-06T21:36:55.387633368Z"
+    },
+    {
+      "id": "pdfann-e4313dbc-044f-4009-ad13-03fa1dcf18dc",
+      "kind": "sref",
+      "type": "method",
+      "slug": "reachability-analysis",
+      "label": "reachability analysis",
+      "page": 43,
+      "text": "Reachability analysis",
+      "notes": "Related analysis task for cyber-physical and hybrid systems.",
+      "createdAt": "2026-05-06T21:36:55.391801749Z"
+    },
+    {
+      "id": "pdfann-d0c8273d-e27e-4ee0-b5cf-aeab8712d74b",
+      "kind": "sref",
+      "type": "method",
+      "slug": "satisfiability-modulo-theories",
+      "label": "satisfiability modulo theories",
+      "page": 6,
+      "text": "smt",
+      "notes": "SMT-based automation context for deductive verification.",
+      "createdAt": "2026-05-06T21:36:55.392573603Z"
+    },
+    {
+      "id": "pdfann-ef788926-b8a4-4fbb-9c14-ae5664ad491f",
+      "kind": "sref",
+      "type": "mathematics",
+      "slug": "ordinary-differential-equations",
+      "label": "ordinary differential equations",
+      "page": 1,
+      "text": "ordinary differential equations",
+      "notes": "Continuous dynamics formalism used by the framework.",
+      "createdAt": "2026-05-06T21:36:55.393958656Z"
+    },
+    {
+      "id": "pdfann-62342757-ca9a-4d2c-a3f7-49786809fb5d",
+      "kind": "sref",
+      "type": "system",
+      "slug": "hybrid-systems",
+      "label": "hybrid systems",
+      "page": 1,
+      "text": "hybrid systems",
+      "notes": "Systems combining discrete and continuous behaviour.",
+      "createdAt": "2026-05-06T21:36:55.394674846Z"
+    },
+    {
+      "id": "pdfann-41cf0c23-c89f-45c4-86a6-8bd252d2c3e4",
+      "kind": "sdef",
+      "type": "semantics",
+      "slug": "hybrid-store",
+      "label": "hybrid store",
+      "page": 1,
+      "text": "hybrid store",
+      "notes": "Store model used by IsaVODEs for local reasoning.",
+      "createdAt": "2026-05-06T21:36:55.395426866Z"
+    },
+    {
+      "id": "pdfann-6004bea3-13e8-4c6b-b511-39a9f1503d28",
+      "kind": "sdef",
+      "type": "method",
+      "slug": "framed-frechet-derivatives",
+      "label": "framed Frechet derivatives",
+      "page": 3,
+      "text": "framed Fréchet derivatives",
+      "notes": "Differentiation technique introduced for framed local reasoning.",
+      "createdAt": "2026-05-06T21:36:55.396164258Z"
+    },
+    {
+      "id": "pdfann-5cb02b83-e244-4610-85f3-19d86aa3827c",
+      "kind": "sref",
+      "type": "mathematics",
+      "slug": "flows",
+      "label": "flows",
+      "page": 1,
+      "text": "flows",
+      "notes": "Certified solutions to systems of ordinary differential equations.",
+      "createdAt": "2026-05-06T21:36:55.397089665Z"
+    },
+    {
+      "id": "pdfann-495897fc-4d2d-4d55-a775-41879abfceac",
+      "kind": "sref",
+      "type": "proof-method",
+      "slug": "invariant-reasoning",
+      "label": "invariant reasoning",
+      "page": 1,
+      "text": "invariant reasoning",
+      "notes": "Proof technique for systems of differential equations.",
+      "createdAt": "2026-05-06T21:36:55.398074306Z"
+    },
+    {
+      "id": "pdfann-20fa8f43-aa0e-42ab-b38d-483badc96627",
+      "kind": "sref",
+      "type": "proof-assistant",
+      "slug": "isabelle-hol",
+      "label": "Isabelle/HOL",
+      "page": 28,
+      "text": "Isabelle/HOL",
+      "notes": "Interactive theorem prover foundation for the development.",
+      "createdAt": "2026-05-06T21:36:55.398757354Z"
+    },
+    {
+      "id": "pdfann-be9a91c8-46ac-42a6-819d-7ab2fa8d0d9f",
+      "kind": "sref",
+      "type": "semantics",
+      "slug": "lenses",
+      "label": "lenses",
+      "page": 2,
+      "text": "Lenses",
+      "notes": "Modular state-space mechanism used for hybrid stores.",
+      "createdAt": "2026-05-06T21:36:55.399374212Z"
+    },
+    {
+      "id": "pdfann-261fb04c-29c6-44c7-bb0a-7670defb6769",
+      "kind": "sref",
+      "type": "logic",
+      "slug": "separation-logic",
+      "label": "separation logic",
+      "page": 3,
+      "text": "separation logic",
+      "notes": "Style of local reasoning used in the framework.",
+      "createdAt": "2026-05-06T21:36:55.399983831Z"
+    },
+    {
+      "id": "pdfann-77cc2f9c-a749-4805-8d06-525e39b6b778",
+      "kind": "sdef",
+      "type": "framework",
+      "slug": "isavodes",
+      "label": "IsaVODEs",
+      "page": 2,
+      "text": "verification framework called IsaVODEs",
+      "notes": "Body-definition occurrence: Isabelle Verification with Ordinary Differential Equations framework.",
+      "createdAt": "2026-05-06T22:16:44.795386998Z"
+    }
+  ]
+}

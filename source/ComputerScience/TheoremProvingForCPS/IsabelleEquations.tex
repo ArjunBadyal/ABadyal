@@ -1,0 +1,577 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{IsaVODEs: Interactive Verification of Cyber-Physical Systems at Scale}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={IsaVODEs: Interactive Verification of Cyber-Physical Systems at Scale}]{IsabelleEquations}
+
+\symdecl{IsaVODEs}[name=IsaVODEs]
+\symdecl{CyberPhysicalSystem}[name={cyber-physical system}]
+\symdecl{HybridSystem}[name={hybrid system}]
+\symdecl{ODE}[name={ordinary differential equation}]
+\symdecl{HybridProgram}[name={hybrid program}]
+\symdecl{DiscreteAssignment}[name={discrete assignment}]
+\symdecl{ContinuousEvolution}[name={continuous evolution}]
+\symdecl{Test}[name=test]
+\symdecl{SequentialComposition}[name={sequential composition}]
+\symdecl{Choice}[name=choice]
+\symdecl{Repeat}[name={finite iteration}]
+\symdecl{InteractiveTheoremProver}[name={interactive theorem prover}]
+\symdecl{ShallowEmbedding}[name={shallow embedding}]
+\symdecl{Flow}[name=flow]
+\symdecl{VectorField}[name={vector field}]
+\symdecl{InitialValueProblem}[name={initial value problem}]
+\symdecl{PicardLindelofTheorem}[name={Picard--Lindelof theorem}]
+\symdecl{StateTransformer}[name={state transformer}]
+\symdecl{PredicateTransformer}[name={predicate transformer}]
+\symdecl{ForwardBox}[name={forward box}]
+\symdecl{WeakestLiberalPrecondition}[name={weakest liberal precondition}]
+\symdecl{HoareTriple}[name={Hoare triple}]
+\symdecl{ForwardDiamond}[name={forward diamond}]
+\symdecl{HybridStore}[name={hybrid store}]
+\symdecl{Lens}[name=lens]
+\symdecl{Dataspace}[name=dataspace]
+\symdecl{LiftedExpression}[name={lifted expression}]
+\symdecl{LensSubstitution}[name={lens substitution}]
+\symdecl{Frame}[name=frame]
+\symdecl{NonModification}[name=non-modification]
+\symdecl{FramedEvolutionCommand}[name={framed evolution command}]
+\symdecl{FramedFrechetDerivative}[name={framed Frechet derivative}]
+\symdecl{DifferentialInvariant}[name={differential invariant}]
+\symdecl{DifferentialInduction}[name={differential induction}]
+\symdecl{DifferentialGhost}[name={differential ghost}]
+\symdecl{DarbouxRule}[name={Darboux rule}]
+\symdecl{VerificationConditionGeneration}[name={verification condition generation}]
+\symdecl{LocalFlow}[name={local flow}]
+\symdecl{LipschitzContinuity}[name={Lipschitz continuity}]
+\symdecl*{Eisbach}
+\symdecl*{Sledgehammer}
+\symdecl{ComputerAlgebraSystem}[name={computer algebra system}]
+\symdecl{WolframEngine}[name={Wolfram Engine}]
+\symdecl*{SageMath}
+\symdecl{DerivativeTest}[name={derivative test}]
+\symdecl{ReachabilityAnalysis}[name={reachability analysis}]
+\symdecl{DeductiveVerification}[name={deductive verification}]
+\symdecl*{ARCH22}
+
+\section{Defined Vocabulary}
+
+\begin{sdefinition}[for=IsaVODEs]
+    \definame{IsaVODEs} is the Isabelle Verification with Ordinary Differential Equations framework for modelling and verifying cyber-physical systems in Isabelle/HOL.
+\end{sdefinition}
+
+\begin{sdefinition}[for=CyberPhysicalSystem]
+    A \definame{CyberPhysicalSystem} is a system whose software controller interacts with a physical environment, usually combining discrete program steps with continuous dynamics.
+\end{sdefinition}
+
+\begin{sdefinition}[for=HybridSystem]
+    A \definame{HybridSystem} is a mathematical model that combines discrete transitions and continuous evolution, commonly represented by hybrid programs and systems of ordinary differential equations.
+\end{sdefinition}
+
+\begin{sdefinition}[for=ODE]
+    An \definame{ODE} specifies continuous dynamics by relating the derivative of a state trajectory to a vector field.
+\end{sdefinition}
+
+\begin{sdefinition}[for=HybridProgram]
+    A \definame{HybridProgram} is a program model for hybrid systems with discrete assignments, tests, sequencing, choice, iteration, and continuous evolution commands.
+\end{sdefinition}
+
+\begin{sdefinition}[for=DiscreteAssignment]
+    A \definame{DiscreteAssignment} instantly updates a program variable with the value of an expression.
+\end{sdefinition}
+
+\begin{sdefinition}[for=ContinuousEvolution]
+    A \definame{ContinuousEvolution} follows an ordinary differential equation for a nondeterministically chosen duration while respecting a guard or evolution-domain constraint.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Test]
+    A \definame{Test} checks a predicate in the current state and aborts the current execution branch if the predicate is false.
+\end{sdefinition}
+
+\begin{sdefinition}[for=SequentialComposition]
+    A \definame{SequentialComposition} executes one hybrid program and then continues with another from each resulting state.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Choice]
+    A \definame{Choice} permits either of two hybrid programs to execute from the current state.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Repeat]
+    A \definame{Repeat} executes a hybrid program any finite number of times.
+\end{sdefinition}
+
+\begin{sdefinition}[for=InteractiveTheoremProver]
+    An \definame{InteractiveTheoremProver} is a proof assistant, such as Isabelle/HOL, Coq, Lean, or PVS, whose trusted kernel checks formal proofs while users and automation construct them.
+\end{sdefinition}
+
+\begin{sdefinition}[for=ShallowEmbedding]
+    A \definame{ShallowEmbedding} represents the syntax and semantics of a modelling language directly with the host logic of the theorem prover, so that the prover's libraries and automation are immediately available.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Flow]
+    A \definame{Flow} is a continuously differentiable monoid action \(\phi : T \to C \to C\) on a continuous state space \(C\), satisfying
+    \[
+        \phi(t_1+t_2)=\phi(t_1)\circ \phi(t_2)
+        \qquad\text{and}\qquad
+        \phi(0)=id_C.
+    \]
+\end{sdefinition}
+
+\begin{sdefinition}[for=VectorField]
+    A \definame{VectorField} is a function \(f : T \to C \to C\) assigning to each point in space-time the velocity vector that determines an ordinary differential equation.
+\end{sdefinition}
+
+\begin{sdefinition}[for=InitialValueProblem]
+    An \definame{InitialValueProblem} for a vector field \(f\) asks for a solution \(X:T\to C\) with \(X'(t)=f(t)(X(t))\) and \(X(t_0)=c\) for a specified initial time and state.
+\end{sdefinition}
+
+\begin{sdefinition}[for=PicardLindelofTheorem]
+    The \definame{PicardLindelofTheorem} gives local uniqueness of solutions to initial value problems when the vector field is Lipschitz continuous on the relevant domain.
+\end{sdefinition}
+
+\begin{sdefinition}[for=StateTransformer]
+    A \definame{StateTransformer} for a hybrid program is a nondeterministic function \(\alpha:S\to\mathcal{P}S\) mapping an initial state to the set of possible final states.
+\end{sdefinition}
+
+\begin{sdefinition}[for=PredicateTransformer]
+    A \definame{PredicateTransformer} maps postconditions to predicates over initial states, and is used in IsaVODEs to generate verification conditions for hybrid programs.
+\end{sdefinition}
+
+\begin{sdefinition}[for=ForwardBox]
+    The \definame{ForwardBox} is the dynamic-logic predicate transformer \(|\alpha]Q\), true at a state \(s\) when every terminating execution of \(\alpha\) from \(s\) ends in a state satisfying \(Q\).
+\end{sdefinition}
+
+\begin{sdefinition}[for=WeakestLiberalPrecondition]
+    A \definame{WeakestLiberalPrecondition} is the same forward-box transformer viewed as a partial-correctness rule: it imposes \(Q\) on all final states if the program terminates.
+\end{sdefinition}
+
+\begin{sdefinition}[for=HoareTriple]
+    A \definame{HoareTriple} \(\{P\}\alpha\{Q\}\) states partial correctness: every terminating execution of program \(\alpha\) from a state satisfying \(P\) ends in a state satisfying \(Q\).
+\end{sdefinition}
+
+\begin{sdefinition}[for=ForwardDiamond]
+    The \definame{ForwardDiamond} is the reachability predicate transformer \(|\alpha\rangle Q\), true at a state \(s\) when some execution of \(\alpha\) from \(s\) reaches a state satisfying \(Q\).
+\end{sdefinition}
+
+\begin{sdefinition}[for=HybridStore]
+    A \definame{HybridStore} is the state model used by IsaVODEs, allowing continuous variables such as reals, vectors, and matrices to coexist with discrete data structures.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Lens]
+    A \definame{Lens} \(x::V\Rightarrow S\) consists of get and put functions for accessing and updating a component of a store, subject to the standard lens laws.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Dataspace]
+    A \definame{Dataspace} is the IsaVODEs declaration mechanism that creates a local hybrid-store context with constants, assumptions, variables, lenses, and independence facts.
+\end{sdefinition}
+
+\begin{sdefinition}[for=LiftedExpression]
+    A \definame{LiftedExpression} is a user-level term translated into a semantic expression \(S\to V\), hiding explicit store arguments and lens get operations from proof obligations.
+\end{sdefinition}
+
+\begin{sdefinition}[for=LensSubstitution]
+    A \definame{LensSubstitution} is a semantic store update such as \([x\leadsto e,y\leadsto f]\), used to specify assignments, flows, and vector fields in the lens-based store.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Frame]
+    A \definame{Frame} is the set of store variables that a program or evolution command may modify; variables outside the frame remain unchanged.
+\end{sdefinition}
+
+\begin{sdefinition}[for=NonModification]
+    \Definame{NonModification} is the property \(\alpha\;nmods\;A\), meaning that program \(\alpha\) leaves the variables or expressions described by \(A\) unchanged.
+\end{sdefinition}
+
+\begin{sdefinition}[for=FramedEvolutionCommand]
+    A \definame{FramedEvolutionCommand} lifts ODE behaviour on the continuous part of a store to the whole hybrid store, leaving variables outside the continuous frame fixed.
+\end{sdefinition}
+
+\begin{sdefinition}[for=FramedFrechetDerivative]
+    A \definame{FramedFrechetDerivative} differentiates an expression with respect to a chosen continuous frame and vector field, ignoring unrelated and discrete store components.
+\end{sdefinition}
+
+\begin{sdefinition}[for=DifferentialInvariant]
+    A \definame{DifferentialInvariant} is a predicate preserved by an evolution command, equivalently an invariant set for the associated dynamical system.
+\end{sdefinition}
+
+\begin{sdefinition}[for=DifferentialInduction]
+    \Definame{DifferentialInduction} proves differential invariants by comparing the derivatives of expressions occurring in equalities and inequalities.
+\end{sdefinition}
+
+\begin{sdefinition}[for=DifferentialGhost]
+    A \definame{DifferentialGhost} is an auxiliary differential equation added to a system to make an invariant proof possible while preserving the original system's correctness claim.
+\end{sdefinition}
+
+\begin{sdefinition}[for=DarbouxRule]
+    A \definame{DarbouxRule} is a specialised consequence of the differential ghost rule for proving invariance of equalities or inequalities whose derivative has a Darboux-style factor.
+\end{sdefinition}
+
+\begin{sdefinition}[for=VerificationConditionGeneration]
+    \Definame{VerificationConditionGeneration} reduces a program-correctness claim to logical and mathematical proof obligations that can be solved by simplification, tactics, or external proof search.
+\end{sdefinition}
+
+\begin{sdefinition}[for=LocalFlow]
+    A \definame{LocalFlow} is the Isabelle/HOL predicate used by IsaVODEs to certify that a supplied flow solves a framed ODE on a given domain.
+\end{sdefinition}
+
+\begin{sdefinition}[for=LipschitzContinuity]
+    \definame{LipschitzContinuity} is the regularity condition used to invoke uniqueness of ODE solutions, and is automated in IsaVODEs through \(C^1\)-based certification.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Eisbach]
+    \definame{Eisbach} is Isabelle's proof-method language, used in IsaVODEs to package high-level tactics such as \texttt{wlp\_solve}, \texttt{dInv}, and \texttt{dInduct\_mega}.
+\end{sdefinition}
+
+\begin{sdefinition}[for=Sledgehammer]
+    \definame{Sledgehammer} is Isabelle's bridge to external automated theorem provers, used to search for proofs that are reconstructed and checked inside Isabelle.
+\end{sdefinition}
+
+\begin{sdefinition}[for=ComputerAlgebraSystem]
+    A \definame{ComputerAlgebraSystem} is an external symbolic algebra tool used as an oracle for candidate ODE solutions, which IsaVODEs then attempts to certify in Isabelle.
+\end{sdefinition}
+
+\begin{sdefinition}[for=WolframEngine]
+    The \definame{WolframEngine} is the Mathematica-family computer algebra backend used by IsaVODEs to suggest symbolic solutions through Wolfram expressions and \texttt{DSolve}.
+\end{sdefinition}
+
+\begin{sdefinition}[for=SageMath]
+    \definame{SageMath} is the open-source computer algebra backend integrated by IsaVODEs through a Python-facing API and an intermediate ODE representation.
+\end{sdefinition}
+
+\begin{sdefinition}[for=DerivativeTest]
+    A \definame{DerivativeTest} is a calculus theorem for detecting monotonicity or local extrema from first and second derivatives, formalised in IsaVODEs to support arithmetic side proofs.
+\end{sdefinition}
+
+\begin{sdefinition}[for=ReachabilityAnalysis]
+    \Definame{ReachabilityAnalysis} verifies hybrid systems by over-approximating or computing reachable state sets until a violation or fixed point is found.
+\end{sdefinition}
+
+\begin{sdefinition}[for=DeductiveVerification]
+    \Definame{DeductiveVerification} establishes correctness by formal proof from semantic rules, as in IsaVODEs, KeYmaera X, HHL, and related theorem-proving frameworks.
+\end{sdefinition}
+
+\begin{sdefinition}[for=ARCH22]
+    \definame{ARCH22} refers to the 2022 Applied Verification of Continuous and Hybrid Systems friendly competition benchmark set used to evaluate IsaVODEs.
+\end{sdefinition}
+
+\section{Scope and Contributions}
+
+Huerta y Munive, Foster, Gleirscher, Struth, Pardillo Laursen, and Hickman present \sn{IsaVODEs} as an Isabelle/HOL framework for verifying \sns{CyberPhysicalSystem}.
+The starting point is the standard modelling split in which a controller is a discrete, state-updating, and possibly nondeterministic program, while the physical environment is specified by systems of \sns{ODE}.
+The paper develops this into a scalable \sn{DeductiveVerification} framework for \sns{HybridSystem}, using \sns{HybridProgram}, predicate-transformer semantics, and Isabelle's libraries for analysis and ODEs.
+
+The framework is a \sn{ShallowEmbedding} in Isabelle/HOL.
+This choice makes the language extensible and allows proofs to use Isabelle's typed higher-order logic, existing mathematical libraries, \sn{Sledgehammer}, and ordinary Isabelle proof methods.
+The paper positions this against domain-specific deductive tools such as KeYmaera X: IsaVODEs seeks comparable automation while preserving the trust model and openness of a general \sn{InteractiveTheoremProver}.
+
+The main contributions are a modelling language for hybrid programs, a lens-based \sn{HybridStore}, frame and local-reasoning laws, \sn{FramedFrechetDerivative}s for ODE reasoning over part of the store, proof methods for \sn{VerificationConditionGeneration}, two ODE workflows based on flows or invariants, integration with \sns{ComputerAlgebraSystem}, and an \sn{ARCH22} benchmark evaluation.
+The paper also adds forward diamonds for progress and reachability claims, generalised \sns{DifferentialGhost} and \sns{DarbouxRule}, automated \sn{LipschitzContinuity} certification, and formalised \sns{DerivativeTest}.
+
+\section{Hybrid-System Semantics}
+
+\subsection{Dynamical Systems}
+
+The mathematical basis distinguishes explicit and implicit descriptions of continuous dynamics.
+An explicit description uses a \sn{Flow} \(\phi:T\to C\to C\), where \(T\) is a nondiscrete submonoid of \(\mathbb{R}\) and \(C\) is a continuous state space.
+For an initial state \(c\in C\), the trajectory \(\phi_c:T\to C\) is given by \(\phi_c(t)=\phi(t)(c)\).
+The orbit map sends an initial state to all states along its trajectory:
+\[
+    \gamma_\phi(c)=\{\phi_c(t)\mid t\in T\}.
+\]
+
+An implicit description uses a \sn{VectorField} \(f:T\to C\to C\).
+A solution to the associated system of \sns{ODE} is a \(C^1\) function \(X:T\to C\) satisfying
+\[
+    X'(t)=f(t)(X(t)).
+\]
+An \sn{InitialValueProblem} additionally fixes \(X(t_0)=c\).
+The \sn{PicardLindelofTheorem} is the uniqueness principle used later: under \sn{LipschitzContinuity}, the solutions of an initial value problem coincide locally, and when this holds uniformly the solutions induce a \sn{Flow}.
+
+\subsection{State Transformers}
+
+The semantic core of \sn{IsaVODEs} represents \sns{HybridProgram} as nondeterministic \sns{StateTransformer} \(\alpha:S\to\mathcal{P}S\).
+This semantic view mirrors the usual grammar
+\[
+    \alpha ::= x := e \mid x' = f\ \&\ G \mid ?P \mid \alpha;\alpha
+        \mid \alpha\cup\alpha \mid \alpha^* .
+\]
+Here \(x := e\) is a \sn{DiscreteAssignment}, \(x'=f\ \&\ G\) is a \sn{ContinuousEvolution} with guard \(G\), \(?P\) is a \sn{Test}, \(\alpha;\beta\) is \sn{SequentialComposition}, \(\alpha\cup\beta\) is nondeterministic \sn{Choice}, and \(\alpha^*\) is \sn{Repeat}.
+
+The state-transformer equations are the expected Kleisli operations for the powerset monad:
+\[
+    (\alpha;\beta)(s)=\bigcup_{s'\in\alpha(s)}\beta(s'),
+    \qquad
+    (\alpha\cup\beta)(s)=\alpha(s)\cup\beta(s),
+\]
+\[
+    \alpha^*(s)=\bigcup_{i\in\mathbb{N}}\alpha^i(s),
+    \qquad
+    \alpha^0=skip,\quad \alpha^{i+1}=\alpha;\alpha^i .
+\]
+Assertions are identified with subidentity state transformers, so predicates, sets of states, and tests can be moved between program and logical viewpoints.
+
+\subsection{Stores and Lenses}
+
+\sn{IsaVODEs} models program variables with \sns{Lens}.
+A lens \(x::V\Rightarrow S\) has \(get_x:S\to V\) and \(put_x:V\to S\to S\), satisfying
+\[
+    get_x(put_x(v)(s))=v,\qquad
+    put_x(v)\circ put_x(v')=put_x(v),\qquad
+    put_x(get_x(s))(s)=s.
+\]
+The source \(S\) is the \sn{HybridStore}; the view \(V\) is the component selected by the lens.
+An expression is a function \(e:S\to V\), and an assignment is represented by
+\[
+    (x:=e)=\langle \lambda s.\ put_x(e(s))(s)\rangle,
+\]
+where angle brackets indicate the deterministic function lifted into a nondeterministic state transformer.
+
+For continuous dynamics, a guarded orbit map generalises the orbit of a \sn{Flow} to all solutions of a \sn{VectorField}.
+For a guard \(G\), interval assignment \(U\), initial time \(t_0\), and state \(c\), the paper uses the set of all \(X(t)\) such that \(X\) solves the \sn{InitialValueProblem}, \(t\in U(c)\), and the trajectory remains inside \(G\) up to \(t\).
+This supplies the semantic content of \sns{ContinuousEvolution}; later sections lift it from the continuous space to the whole \sn{HybridStore} by framing.
+
+\section{Predicate Transformers}
+
+\subsection{Forward Boxes and Hoare Triples}
+
+The \sn{ForwardBox}, also called the \sn{WeakestLiberalPrecondition}, is the \sn{PredicateTransformer}
+\[
+    |\alpha]Q(s) \Longleftrightarrow
+    \forall s'.\, s'\in\alpha(s)\Longrightarrow Q(s').
+\]
+It supports partial-correctness reasoning: if \(\alpha\) terminates from \(s\), all resulting states satisfy \(Q\).
+The standard equations become rewrite rules for \sn{VerificationConditionGeneration}:
+\[
+\begin{array}{rclcrcl}
+|skip]Q &=& Q, &&
+|abort]Q &=& \top,\\
+|?P]Q &=& P\Longrightarrow Q, &&
+|x:=e]Q &=& Q[e/x],\\
+|\alpha;\beta]Q &=& |\alpha]|\beta]Q, &&
+|\alpha\cup\beta]Q &=& |\alpha]Q\wedge|\beta]Q,\\
+|if\ T\ then\ \alpha\ else\ \beta]Q
+&=& (T\Longrightarrow|\alpha]Q)\wedge(\neg T\Longrightarrow|\beta]Q).
+\end{array}
+\]
+Loops require invariant rules rather than simple simplification.
+
+A \sn{HoareTriple} is defined from the \sn{ForwardBox}:
+\[
+    \{P\}\alpha\{Q\}\Longleftrightarrow P\Longrightarrow|\alpha]Q.
+\]
+The resulting Hoare rules include rules for skip, abort, tests, assignments, sequential composition, choice, conditionals, loops, and evolution commands.
+For ODEs, the important split is methodological: when a certified \sn{Flow} is available, use the flow law; when it is not available, provide a \sn{DifferentialInvariant}.
+
+\subsection{Forward Diamonds}
+
+The \sn{ForwardDiamond} extends the framework from safety-style partial correctness to reachability and progress:
+\[
+    |\alpha\rangle Q(s) \Longleftrightarrow
+    \exists s'.\, s'\in\alpha(s)\wedge Q(s').
+\]
+It satisfies the duality \( |\alpha\rangle Q=\neg|\alpha]\neg Q\), and therefore has laws corresponding to the forward-box laws:
+\[
+\begin{array}{rclcrcl}
+|skip\rangle Q &=& Q, &&
+|abort\rangle Q &=& \bot,\\
+|?P\rangle Q &=& P\wedge Q, &&
+|x:=e\rangle Q &=& Q[e/x],\\
+|\alpha;\beta\rangle Q &=& |\alpha\rangle|\beta\rangle Q, &&
+|\alpha\cup\beta\rangle Q &=& |\alpha\rangle Q\vee|\beta\rangle Q.
+\end{array}
+\]
+For \sns{ContinuousEvolution}, the diamond law existentially quantifies a solution and a time at which the postcondition is reached while the guard has held along the preceding trajectory.
+
+\section{Hybrid Modelling Language}
+
+\sn{Dataspace}s are IsaVODEs' user-facing store declarations.
+A declaration introduces constants, named assumptions, and variables, and internally creates an Isabelle locale equipped with lenses and independence assumptions.
+Because variables are \sns{Lens}, the resulting model supports local reasoning, inheritance of store contexts, and typed variables over reals, vectors, matrices, and discrete data types.
+
+\sn{LiftedExpression}s bridge the gap between ordinary mathematical syntax and semantic functions \(S\to V\).
+The user writes expressions such as \(x^2+y^2\leq c^2\), while Isabelle stores a function involving \(get_x\), \(get_y\), and a hidden state argument.
+The translation marks lifted terms with expression syntax, inserts getters for lenses, applies existing expressions to the state, and leaves constants unchanged.
+The pretty-printer reverses this translation, so proof goals remain readable.
+
+\sn{LensSubstitution}s provide the notation used for assignments, flows, and framed vector fields:
+\[
+    [x_1\leadsto e_1,x_2\leadsto e_2,\ldots]
+    = id(x_1\leadsto e_1)(x_2\leadsto e_2)\cdots .
+\]
+Variables not mentioned in the substitution are unchanged.
+Substitution into expressions is written \(e[v/x]=e\circ[x\leadsto v]\), giving the familiar \(Q[e/x]\) law for assignments.
+An Isabelle simplification procedure reorders and reduces substitutions during verification-condition generation.
+
+Vectors and matrices are inherited from HOL-Analysis finite Cartesian products.
+IsaVODEs adds surface syntax for matrices and component access through composed \sns{Lens}.
+If \(p::\mathbb{R}^n\Rightarrow S\), then coordinate lenses are obtained by composing \(p\) with the \(i\)-th vector-coordinate lens.
+This lets a specification speak both about structured engineering objects and about their individual coordinates.
+
+\section{Local Reasoning}
+
+\subsection{Frames and Non-modification}
+
+A \sn{Frame} is represented by lens sums.
+Independent lenses \(x_1::V_1\Rightarrow S\) and \(x_2::V_2\Rightarrow S\) combine as
+\[
+    x_1\oplus x_2::V_1\times V_2\Rightarrow S,
+\]
+with the view obtained by pairing the two getters and the update obtained by composing the two puts.
+This represents finite heterogeneous variable sets, up to the usual product isomorphisms.
+
+The paper uses lens preorders and equivalences to reason about inclusion and equality of variable sets.
+It also uses unrestriction, written \(A\sharp e\), to express that an expression \(e\) does not semantically depend on variables in \(A\).
+\sn{NonModification}, written \(\alpha\;nmods\;A\), says that all executions of \(\alpha\) preserve the variables or expressions described by \(A\).
+Tests modify nothing, assignments modify only their assigned variables, and program combinators inherit non-modification from their parts.
+
+The central frame rules are:
+\[
+    \frac{\{P\}\alpha\{Q\}\qquad \alpha\;nmods\;I}
+         {\{P\wedge I\}\alpha\{Q\wedge I\}},
+\]
+and the variant that infers immutability from a frame \(A\) plus the condition that \(I\) depends only on variables outside \(A\).
+These rules support separation-logic-style local reasoning over hybrid stores.
+
+\subsection{Framed Evolution Commands}
+
+\sn{FramedEvolutionCommand}s turn continuous dynamics over a part \(C\) of a store into state transformers over the full store \(S\).
+Given a frame lens \(x::C\Rightarrow S\), a predicate \(G:S\to\mathbb{B}\) restricts to \(G^s_x:C\to\mathbb{B}\) by
+\[
+    G^s_x(c) \Longleftrightarrow G(put_x(c)(s)).
+\]
+A state-wide substitution \(f:T\to S\to S\) frames to a vector field on \(C\) by
+\[
+    f^s_x(t)(c)=get_x(f(t)(put_x(c)(s))).
+\]
+The evolution command then updates only the continuous frame \(x\), by placing each solution point \(X(t)\) back into the original store with \(put_x(X(t))(s)\).
+Variables outside the frame remain unchanged, which gives ODE non-modification laws for free.
+
+\subsection{Differential Invariants and Framed Derivatives}
+
+The predicate \(diff\_inv\ x\ f\ G\ U\ t_0\ I\) abbreviates that \(I\) is a \sn{DifferentialInvariant} for a framed evolution command.
+In Hoare form, it states
+\[
+    diff\_inv\ x\ f\ G\ U\ t_0\ I
+    \Longleftrightarrow
+    \{I\}\ (x'=f\ \&\ G)^ {t_0}_U\ \{I\}.
+\]
+\sn{DifferentialInduction} reduces invariance of equalities and inequalities to derivative comparisons.
+
+For an expression \(e:S\to U\), vector field \(f:S\to S\), and frame \(x::C\Rightarrow S\), the \sn{FramedFrechetDerivative} is
+\[
+    (D^f_x e)(s)
+    =
+    D(e^s_x)(get_x(s))(get_x(f(s))).
+\]
+It is the directional Frechet derivative of the framed expression in the direction induced by the ODE.
+The core invariant rules are:
+\[
+\begin{array}{rcl}
+G\Longrightarrow D^f_x e_1=D^f_x e_2
+&\Longrightarrow&
+diff\_inv\ x\ f\ G\ \mathbb{R}_{\geq 0}\ 0\ (e_1=e_2),\\
+G\Longrightarrow D^f_x e_1\leq D^f_x e_2
+&\Longrightarrow&
+diff\_inv\ x\ f\ G\ \mathbb{R}_{\geq 0}\ 0\ (e_1\leq e_2),\\
+G\Longrightarrow D^f_x e_1\leq D^f_x e_2
+&\Longrightarrow&
+diff\_inv\ x\ f\ G\ \mathbb{R}_{\geq 0}\ 0\ (e_1<e_2).
+\end{array}
+\]
+The accompanying derivative laws say that constants and variables outside the frame have derivative \(0\), variables inside the frame use the ODE right-hand side, and sums, products, powers, and logarithms follow the usual calculus rules.
+
+\subsection{Ghosts and Darboux Rules}
+
+\sn{DifferentialInduction} is incomplete for many invariants.
+\sn{IsaVODEs} therefore formalises a framed \sn{DifferentialGhost} rule, adding fresh auxiliary ODEs to prove a property of the original system.
+In schematic form:
+\[
+    \frac{\{P\}\{x'=f,\ y'=A\cdot y+b\ \&\ G\}\{Q\}}
+         {\{\exists v.\ P[v/y]\}\{x'=f\ \&\ G\}\{\exists v.\ Q[v/y]\}} .
+\]
+The formal rule requires independence between the ghost variables and the original frame.
+The paper then derives \sns{DarbouxRule} for equality and inequality invariants, giving specialised ghost-based rules for cases where the derivative of an expression can be related to the expression itself.
+
+\section{Reasoning Components}
+
+\sn{IsaVODEs} packages the previous semantic laws into \sn{Eisbach} proof methods.
+The method \texttt{vderiv} recursively certifies vector derivative equations by applying derivative rules and higher-order unification.
+The paper extends this tactic with rules for exponentials, square roots, tangent, cotangent, vector inner products, and norms.
+
+\sn{LipschitzContinuity} certification is automated through the formal theorem that \(C^1\) functions are locally Lipschitz continuous:
+\[
+    open(S)\wedge open(T)\wedge
+    \bigl(\forall \tau\in T.\forall s\in S.\ D(f(\tau))\text{ is the derivative at }s\bigr)
+    \wedge continuous\_on(S,D)
+    \Longrightarrow local\_lipschitz(T,S,f).
+\]
+The tactics \texttt{c1\_lipschitz} and \texttt{c1\_lipschitzI} apply this theorem and attempt to discharge openness, continuity, and differentiability obligations.
+The method \texttt{local\_flow\_on\_auto} combines \texttt{c1\_lipschitz} and \texttt{vderiv} to certify that a supplied flow is a \sn{LocalFlow}.
+
+The main flow-based verification methods are:
+\[
+\begin{array}{ll}
+\texttt{wlp\_simp} & \text{simplifies forward-box goals using wlp laws and loop invariants},\\
+\texttt{wlp\_flow} & \text{uses a previously proved local-flow theorem},\\
+\texttt{wlp\_solve} & \text{uses a candidate flow and calls local-flow certification},\\
+\texttt{wlp\_full} & \text{tries to close the residual real-arithmetic goals}.
+\end{array}
+\]
+Additional simplification tactics support algebraic rearrangement of monomials and powers.
+
+The \sn{ComputerAlgebraSystem} integration supplies candidate solutions, never unchecked final proofs.
+The command \texttt{find\_local\_flow} extracts an ODE from the current goal, translates it into an intermediate arithmetic-expression representation, asks a backend for a symbolic solution, translates the result back into Isabelle syntax, and suggests a \texttt{wlp\_solve} invocation.
+\sn{WolframEngine} integration targets Wolfram expressions and \texttt{DSolve}; \sn{SageMath} integration uses a Python-facing API and adds preprocessing for independent equations and higher-order ODE encodings.
+Candidate solutions can fail certification if they use functions absent from Isabelle or are undefined on parts of the requested domain.
+
+For invariant-based reasoning, \texttt{dWeaken} applies differential weakening, \texttt{dInduct} applies differential induction and framed derivative simplification, and \texttt{dInduct\_auto} adds expression automation.
+The search method \texttt{dInduct\_mega} repeatedly tries known facts, differential weakening, differential cuts, conditional splitting, and automatic differential induction.
+\texttt{dInv} wraps this into the common task of proving a supplied invariant sufficient for a Hoare-style ODE goal.
+\texttt{dGhost} automates the framed \sn{DifferentialGhost} rule.
+
+The paper also formalises \sns{DerivativeTest} to support real-arithmetic obligations that remain after VCG.
+It defines monotonicity and local extrema, proves interval-composition lemmas for increasing and decreasing functions, and proves first- and second-derivative tests.
+The first derivative test derives monotonicity from the sign of the derivative on an interval.
+The second derivative test derives a local maximum or minimum from a zero first derivative and a negative or positive continuous second derivative.
+
+\section{Evaluation}
+
+The evaluation uses \(66\) \sn{ARCH22} hybrid-systems theorem-proving problems.
+The set contains \(5\) regular-program problems, \(32\) continuous-dynamics problems, and \(29\) hybrid-program problems.
+The authors classify them by purpose, competition category, and dynamics; \(40\) have linear dynamics, \(21\) have nonlinear dynamics, and \(5\) have no ODEs.
+
+\sn{IsaVODEs} proves \(58\) of the \(66\) benchmark problems fully inside Isabelle.
+It proves \(4\) further problems when external arithmetic certification is allowed.
+Within the Design Shapes category, the paper reports \(59\) solved out of \(61\), with \(55\) fully proved without a computer algebra oracle.
+This is presented as comparable with KeYmaera X and HHLPy on the same competition material.
+
+The authors first attempted flow-based proofs with supplied solutions, solving \(39\) problems that way.
+The remaining solved problems required higher-order Isabelle reasoning or dL-style methods such as \sn{DifferentialInduction}, \sns{DifferentialGhost}, differential cuts, weakening, and \sns{DarbouxRule}.
+The tactics substantially shorten scripts: \(48\) benchmark problems are solved by a single tactic call.
+The largest remaining limitation is real arithmetic, especially nonlinear arithmetic obligations that are too hard for standard SMT-backed automation.
+
+\section{Related Work and Outlook}
+
+The paper distinguishes \sn{ReachabilityAnalysis} from \sn{DeductiveVerification}.
+Reachability tools approximate or compute reachable state sets, while deductive tools prove correctness from logical rules.
+IsaVODEs belongs to the deductive line and is compared with PVS and Coq formalisations of hybrid systems, Isabelle/HOL verification frameworks, Hybrid Hoare Logic and HHLPy, KeYmaera X and differential dynamic logic, and related formalisation work in Isabelle's Archive of Formal Proofs.
+
+Compared with domain-specific tools, the distinctive IsaVODEs choice is to keep the framework inside Isabelle/HOL.
+External tools may suggest facts or solutions, but certification is intended to happen in Isabelle.
+The framework benefits from Isabelle's libraries, document model, frontend, syntax translations, code generation support, hammers, and extensible proof-method language.
+
+The conclusion identifies four directions.
+First, real-arithmetic decision procedures need better certified integration.
+Second, the modal side of the framework can be extended beyond the existing forward diamond and backward diamond work.
+Third, the differential ghost rule can be generalised further to match the full flexibility of dL's syntactic rule.
+Fourth, IsaVODEs can be connected to software-engineering workflows and engineering notations because its syntax and semantics are extensible within Isabelle.
+
+\end{smodule}
+\end{document}

@@ -1,0 +1,193 @@
+{
+  "schema": "gln.pdf-annotations.v1",
+  "pdfPath": "source/ComputerScience/TheoremProvingForCPS/Verifying Numerical Methods with Isabelle-HOL.pdf",
+  "annotations": [
+    {
+      "id": "pdfann-366bb6e2-4fb2-4812-9c8e-65c9d8663734",
+      "kind": "sref",
+      "type": "system",
+      "slug": "cyber-physical-systems",
+      "label": "cyber-physical systems",
+      "page": 1,
+      "text": "cyber-physical systems",
+      "notes": "Application domain of the verification framework.",
+      "createdAt": "2026-05-10T10:41:05.069501549Z"
+    },
+    {
+      "id": "pdfann-b681121f-e8b7-4b48-b997-a40651a18b78",
+      "kind": "sref",
+      "type": "method",
+      "slug": "verification",
+      "label": "verification",
+      "page": 1,
+      "text": "verification",
+      "notes": "Central activity addressed by the paper.",
+      "createdAt": "2026-05-10T10:41:05.069547598Z"
+    },
+    {
+      "id": "pdfann-e960a543-826a-47bb-bcb4-5d543d0e7654",
+      "kind": "sref",
+      "type": "method",
+      "slug": "satisfiability-modulo-theories",
+      "label": "satisfiability modulo theories",
+      "page": 9,
+      "text": "smt",
+      "notes": "SMT-based automation context for deductive verification.",
+      "createdAt": "2026-05-10T10:41:05.069583431Z"
+    },
+    {
+      "id": "pdfann-2baf69c9-8c59-4b3a-bc69-761b22b24a2a",
+      "kind": "sref",
+      "type": "mathematics",
+      "slug": "ordinary-differential-equations",
+      "label": "ordinary differential equations",
+      "page": 2,
+      "text": "Ordinary Differential Equations",
+      "notes": "Continuous dynamics formalism used by the framework.",
+      "createdAt": "2026-05-10T10:41:05.069615788Z"
+    },
+    {
+      "id": "pdfann-cdb42fea-cd87-407f-b439-a9c664ebc17f",
+      "kind": "sref",
+      "type": "proof-assistant",
+      "slug": "isabelle-hol",
+      "label": "Isabelle/HOL",
+      "page": 1,
+      "text": "Isabelle/HOL",
+      "notes": "Interactive theorem prover foundation for the development.",
+      "createdAt": "2026-05-10T10:41:05.069625035Z"
+    },
+    {
+      "id": "pdfann-09ab701b-50d1-44e2-8e90-efc6072c52c0",
+      "kind": "sdef",
+      "type": "method",
+      "slug": "bisection-method",
+      "label": "bisection method",
+      "page": 5,
+      "text": "The bisection method, in particular, is a classic, derivative-free algorithm for finding roots of continuous functions.",
+      "notes": "Body definition introducing the bisection method as a derivative-free root-finding algorithm.",
+      "createdAt": "2026-05-10T10:44:56.699964181Z"
+    },
+    {
+      "id": "pdfann-0b48272a-ec7c-4742-8a66-d1e16b10ac3a",
+      "kind": "sdef",
+      "type": "theorem",
+      "slug": "bolzanos-theorem",
+      "label": "Bolzano's Theorem",
+      "page": 5,
+      "text": "Bolzano's Theorem states that a real-valued function f, continuous on a closed interval [a, b] ⊆ R, and such that f(a) and f(b) have opposite signs, has a root inside the open interval (a, b).",
+      "notes": "Explicit statement/definition of Bolzano's Theorem in the body.",
+      "createdAt": "2026-05-10T10:44:56.699986090Z"
+    },
+    {
+      "id": "pdfann-3e96d29b-bcc3-4366-a6c3-0e7738cfad77",
+      "kind": "sdef",
+      "type": "method",
+      "slug": "fixed-point-method",
+      "label": "fixed-point method",
+      "page": 10,
+      "text": "the FPM approximates fixed points of its input functions. These are points r such that f(r) = r... The fixed-point method starts from an initial guess x0 and repeatedly applies f: xn+1 = f(xn).",
+      "notes": "Body definition of the fixed-point method (FPM).",
+      "createdAt": "2026-05-10T10:44:56.699999441Z"
+    },
+    {
+      "id": "pdfann-1dae0bec-ddf4-4432-91e1-61676fc5fbb1",
+      "kind": "sdef",
+      "type": "property",
+      "slug": "contractive-set",
+      "label": "contractive set",
+      "page": 11,
+      "text": "if there is a constant c such that |g(x) − g(y)| ≤ c |x − y| and 0 < c < 1, for x, y ∈ S, then the function g is c-contractive on S, or equivalently, S is a contractive set for g.",
+      "notes": "Definition of c-contractive function and contractive set.",
+      "createdAt": "2026-05-10T10:44:56.700003639Z"
+    },
+    {
+      "id": "pdfann-65a3a536-3196-4d6a-87a0-b4baa111b6f8",
+      "kind": "sdef",
+      "type": "method",
+      "slug": "verification-condition-generation",
+      "label": "verification condition generation",
+      "page": 3,
+      "text": "Hoare logic and verification condition generation (VCG) for algorithms operating over the real numbers, including total correctness.",
+      "notes": "Introduces VCG as the verification mechanism used by the framework.",
+      "createdAt": "2026-05-10T10:44:56.700016689Z"
+    },
+    {
+      "id": "pdfann-92b5af35-1cd6-4dcd-adf5-ed01f6f0cd43",
+      "kind": "sdef",
+      "type": "framework",
+      "slug": "isabelle-itrees",
+      "label": "Isabelle/ITrees",
+      "page": 3,
+      "text": "Our verification approach is based on the Isabelle/ITrees framework... The programs are assigned a formal semantics in terms of Interaction Trees (ITrees), which unify denotational and operational semantics for programs.",
+      "notes": "Definition/introduction of the Isabelle/ITrees framework underlying the work.",
+      "createdAt": "2026-05-10T10:44:56.700029502Z"
+    },
+    {
+      "id": "pdfann-d96c8295-53a0-43df-8feb-eb2f19ba684b",
+      "kind": "sdef",
+      "type": "data-structure",
+      "slug": "interaction-trees",
+      "label": "Interaction Trees",
+      "page": 3,
+      "text": "Interaction Trees (ITrees), which unify denotational and operational semantics for programs. In particular, ITrees, as coinductively defined data structures, are fundamentally executable in nature",
+      "notes": "Defines Interaction Trees as coinductive data structures unifying denotational/operational semantics.",
+      "createdAt": "2026-05-10T10:44:56.700042354Z"
+    },
+    {
+      "id": "pdfann-2e468040-112b-43ce-a22d-91cb6b67a596",
+      "kind": "sdef",
+      "type": "method",
+      "slug": "newtons-method",
+      "label": "Newton's Method",
+      "page": 11,
+      "text": "Newton's Method, a special case of the Fixed-Point Method with quadratic convergence. This yields the fixed-point iteration xk+1 = g(xk), g(x) = x − f(x)/f'(x) = (1/2)(x + 3/x).",
+      "notes": "Body characterisation of Newton's Method as a special case of FPM.",
+      "createdAt": "2026-05-10T10:44:56.700055872Z"
+    },
+    {
+      "id": "pdfann-9038043c-6d05-436e-a8c9-612c5c036b14",
+      "kind": "sref",
+      "type": "theorem",
+      "slug": "taylors-theorem",
+      "label": "Taylor's theorem (Peano form)",
+      "page": 2,
+      "text": "higher-order derivatives and Taylor's theorem in Peano form",
+      "notes": "Key contributed result; defined/used throughout Sections 5–6.",
+      "createdAt": "2026-05-10T10:44:56.700060070Z"
+    },
+    {
+      "id": "pdfann-2961761c-d08b-43d4-9a4a-7ec477bf426b",
+      "kind": "sref",
+      "type": "library",
+      "slug": "hol-analysis",
+      "label": "HOL-Analysis",
+      "page": 3,
+      "text": "HOL-Analysis package",
+      "notes": "Isabelle library combined with ITrees to support real-number reasoning.",
+      "createdAt": "2026-05-10T10:44:56.700073226Z"
+    },
+    {
+      "id": "pdfann-1a9192aa-4af0-4a68-b60e-30a25792a8ba",
+      "kind": "sref",
+      "type": "tool",
+      "slug": "sledgehammer",
+      "label": "Sledgehammer",
+      "page": 3,
+      "text": "Isabelle's Sledgehammer tool largely aids in the proving process",
+      "notes": "Automation tool repeatedly invoked for discharging VCs.",
+      "createdAt": "2026-05-10T10:44:56.700086603Z"
+    },
+    {
+      "id": "pdfann-a05b3879-9d27-4ce4-8667-4441c2177d56",
+      "kind": "sref",
+      "type": "logic",
+      "slug": "hoare-logic",
+      "label": "Hoare logic",
+      "page": 3,
+      "text": "Hoare logic and verification condition generation (VCG)",
+      "notes": "Logical foundation for the correctness specifications.",
+      "createdAt": "2026-05-10T10:44:56.700099346Z"
+    }
+  ]
+}

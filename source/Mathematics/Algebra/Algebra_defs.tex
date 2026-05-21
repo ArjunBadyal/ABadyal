@@ -1,0 +1,30 @@
+\documentclass[hidelinks]{article}
+\usepackage{stex}
+
+\libinput{preambleCS}
+
+\title{Algebra Definitions}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{smodule}[title={Algebra}]{Algebra}
+
+    \section{Core Concepts}
+
+    \symdecl*{manifold}
+    \begin{sdefinition}[for=manifold]
+        A \definame{manifold} is a topological space that is locally homeomorphic to Euclidean space, equipped with charts whose transition maps are infinitely differentiable. 
+    \end{sdefinition}
+
+    \symdecl*{group action}
+    \begin{sdefinition}[for=group action]
+        A \definame{group action} of a group $G$ on a \sn{manifold} $M$ is a continuously differentiable map $a \colon G \times M \to M$ that preserves the group identity ($a(e, x) = x$) and is compatible with composition ($a(g h, x) = a(g, a(h, x))$).
+    \end{sdefinition}
+
+\end{smodule}
+
+\end{document}
